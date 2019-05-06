@@ -1,0 +1,14 @@
+b Baba
+B Baba text
+  empty
+f flag
+F flag text
+I is text
+P push text
+r rock
+R rock text
+S stop text
+w wall
+W wall text
+! win text
+Y you text
