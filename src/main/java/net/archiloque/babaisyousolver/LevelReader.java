@@ -49,17 +49,19 @@ final class LevelReader {
     Map<Character, Integer> result = new HashMap<>();
     for (String tileLine : tilesContent) {
       Matcher m = TILES_REGEX.matcher(tileLine);
-      if (m.find()) {
-        Character character = m.group(1).charAt(0);
-        String tile = m.group(2);
-        int index = Arrays.binarySearch(Tiles.ALL_STRINGS, tile);
-        if (index < 0) {
-          throw new IllegalArgumentException("Unknown tile [" + tile + "]");
-        }
-        result.put(character, index);
-      } else {
-        throw new IllegalArgumentException("Bad tile declaration [" + tileLine + "]");
+      if (!m.find()) {
+        throw new IllegalArgumentException(
+            "Bad tile declaration [" + tileLine + "]");
+
       }
+      Character character = m.group(1).charAt(0);
+      String tile = m.group(2);
+      int index = Arrays.binarySearch(Tiles.ALL_STRINGS, tile);
+      if (index < 0) {
+        throw new IllegalArgumentException(
+            "Unknown tile [" + tile + "]");
+      }
+      result.put(character, index);
     }
     return result;
   }
@@ -96,8 +98,10 @@ final class LevelReader {
           int position = (lineIndex * width) + columnIndex;
           content[position] = tiles.get(c);
         } else {
-          throw new IllegalArgumentException("Unknown tile [" + c
-              + "] at line " + lineIndex + " of " + elementsFile.toAbsolutePath());
+          throw new IllegalArgumentException(
+              "Unknown tile [" + c
+                  + "] at line " + lineIndex + " of " +
+                  elementsFile.toAbsolutePath());
         }
       }
     }
@@ -110,7 +114,8 @@ final class LevelReader {
   ) throws FileNotFoundException {
     Path file = directory.resolve(fileName);
     if (!Files.exists(file)) {
-      throw new FileNotFoundException(file.toAbsolutePath().toString());
+      throw new FileNotFoundException(
+          file.toAbsolutePath().toString());
     }
     return file;
   }
