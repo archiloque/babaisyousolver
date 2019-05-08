@@ -15,8 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LevelReaderTest {
 
-  @NotNull
-  private Map<Character, Integer> getTiles() {
+  private @NotNull Map<Character, Integer> getTiles() {
     Map<Character, Integer> result = new HashMap<>();
     result.put('b', Tiles.BABA);
     result.put('B', Tiles.BABA_TEXT);
@@ -24,19 +23,42 @@ class LevelReaderTest {
     return result;
   }
 
-  @NotNull
-  private Path getFilePath(String path) {
+  private @NotNull Path getFilePath(String path) {
     return Path.of("src", "test", "resources", path);
   }
 
-  @NotNull
-  private Map<Character, Integer> readTiles(@NotNull String path) throws IOException {
+  private @NotNull Map<Character, Integer> readTiles(
+      @NotNull String path
+  ) throws IOException {
     return LevelReader.readTiles(getFilePath(path));
   }
 
   @NotNull
-  private LevelReader.LevelReaderResult readContent(@NotNull String path, @NotNull Map<Character, Integer> tiles) throws IOException {
+  private LevelReader.LevelReaderResult readContent(
+      @NotNull String path,
+      @NotNull Map<Character, Integer> tiles
+  ) throws IOException {
     return LevelReader.readContent(getFilePath(path), tiles);
+  }
+
+  private void checkReadContentException(
+      @NotNull String filePath,
+      @NotNull String expectedMessage,
+      @NotNull Class exceptedExceptionClass) {
+    Throwable exception = assertThrows(exceptedExceptionClass, () ->
+        readContent(filePath, getTiles())
+    );
+    assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  private void checkReadTilesException(
+      @NotNull String filePath,
+      @NotNull String expectedMessage,
+      @NotNull Class exceptedExceptionClass) {
+    Throwable exception = assertThrows(exceptedExceptionClass, () ->
+        readTiles(filePath)
+    );
+    assertEquals(expectedMessage, exception.getMessage());
   }
 
   @Test
@@ -50,32 +72,37 @@ class LevelReaderTest {
 
   @Test
   void readTilesFileNotFound() {
-    Exception exception = assertThrows(FileNotFoundException.class, () ->
-        readTiles("not found")
-    );
-    String absolutePath = getFilePath("not found").resolve("tiles.txt").toAbsolutePath().toString();
-    assertEquals(absolutePath, exception.getMessage());
+    checkReadTilesException(
+        "not found",
+        getPath("not found", "tiles.txt"),
+        FileNotFoundException.class);
+
+  }
+
+  private String getPath(String dir, String file) {
+    return getFilePath(dir).resolve(file).toAbsolutePath().toString();
   }
 
   @Test
   void readTilesTilesNotFound() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () ->
-        readTiles("tile-not-found")
-    );
-    assertEquals("Unknown tile [what?]", exception.getMessage());
+    checkReadTilesException(
+        "tile-not-found",
+        "Unknown tile [what?]",
+        IllegalArgumentException.class);
   }
 
   @Test
   void readTilesInvalidSyntax() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () ->
-        readTiles("tile-invalid-syntax")
-    );
-    assertEquals("Bad tile declaration [ba what?]", exception.getMessage());
+    checkReadTilesException(
+        "tile-invalid-syntax",
+        "Bad tile declaration [ba what?]",
+        IllegalArgumentException.class);
   }
 
   @Test
   void readContentOK() throws IOException {
-    LevelReader.LevelReaderResult levelReaderResult = readContent("content-ok", getTiles());
+    LevelReader.LevelReaderResult levelReaderResult =
+        readContent("content-ok", getTiles());
     assertEquals(2, levelReaderResult.height);
     assertEquals(3, levelReaderResult.width);
     assertArrayEquals(new int[]{
@@ -90,29 +117,28 @@ class LevelReaderTest {
 
   @Test
   void readContentFileNotFound() {
-    Exception exception = assertThrows(FileNotFoundException.class, () ->
-        readContent("not found", getTiles())
-    );
-    String absolutePath = getFilePath("not found").resolve("content.txt").toAbsolutePath().toString();
-    assertEquals(absolutePath, exception.getMessage());
-
+    checkReadContentException(
+        "not found",
+        getPath("not found", "content.txt"),
+        FileNotFoundException.class);
   }
 
   @Test
   void readContentInvalidLineLength() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () ->
-        readContent("content-bad-length", getTiles())
-    );
-    String absolutePath = getFilePath("content-bad-length").resolve("content.txt").toAbsolutePath().toString();
-    assertEquals("[bb] is not 4 characters long at line 1 of " + absolutePath, exception.getMessage());
+    String absolutePath = getPath("content-bad-length", "content.txt");
+    checkReadContentException(
+        "content-bad-length",
+        "[bb] is not 4 characters long at line 1 of " + absolutePath,
+        IllegalArgumentException.class);
   }
 
   @Test
   void readContentUnknownTile() {
-    Exception exception = assertThrows(IllegalArgumentException.class, () ->
-        readContent("content-unknown-tile", getTiles())
-    );
-    String absolutePath = getFilePath("content-unknown-tile").resolve("content.txt").toAbsolutePath().toString();
-    assertEquals("Unknown tile [c] at line 1 of " + absolutePath, exception.getMessage());
+    String absolutePath = getPath("content-unknown-tile", "content.txt");
+    checkReadContentException(
+        "content-unknown-tile",
+        "Unknown tile [c] at line 1 of " + absolutePath,
+        IllegalArgumentException.class);
   }
+
 }
