@@ -24,8 +24,7 @@ final class LevelReader {
   /**
    * Read a level from a directory.
    */
-  @NotNull
-  static LevelReaderResult readLevel(
+  static @NotNull LevelReaderResult readLevel(
       @NotNull Path levelDirectory)
       throws IOException {
     return readContent(
