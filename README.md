@@ -10,9 +10,9 @@ Build:
 mvn install
 ```
 
-Run all levels:
+Run a level:
 ```
-java -jar target/babaisyousolver-1.0-SNAPSHOT.jar 
+java -jar target/babaisyousolver-1.0-SNAPSHOT.jar levels/01 
 ```
 
  
