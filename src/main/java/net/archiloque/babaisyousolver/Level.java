@@ -27,6 +27,10 @@ class Level {
     states.add(state);
   }
 
+  void addState(@NotNull int[] content) {
+    states.add(new State(this, content));
+  }
+
   @Nullable State solve() {
     while (!states.isEmpty()) {
       State state = states.pop();
