@@ -28,8 +28,9 @@ class StateTryToGoTest {
     }
   }
 
+
   /**
-   * Simple cases are tested with a level of 2x1
+   * Cases are tested with a level of ?x1
    * Baba is in the first position and tries to go left
    */
   void checkMoveSimple(
@@ -37,7 +38,7 @@ class StateTryToGoTest {
       boolean result,
       int[][] possibleNextMoves) {
     LevelToTestTryToGo level = new LevelToTestTryToGo(
-        2,
+        content.length,
         1,
         content);
     State state = new State(level, content);
@@ -78,4 +79,26 @@ class StateTryToGoTest {
         new int[0][]
     );
   }
+
+  @Test
+  void testMoveRock() {
+    checkMoveSimple(
+        new int[]{Tiles.BABA, Tiles.ROCK},
+        false,
+        new int[0][]
+    );
+
+    checkMoveSimple(
+        new int[]{Tiles.BABA, Tiles.ROCK, Tiles.ROCK},
+        false,
+        new int[0][]
+    );
+
+    checkMoveSimple(
+        new int[]{Tiles.BABA, Tiles.ROCK, Tiles.EMPTY},
+        false,
+        new int[][]{new int[]{Tiles.EMPTY, Tiles.BABA, Tiles.ROCK}}
+    );
+  }
+  
 }

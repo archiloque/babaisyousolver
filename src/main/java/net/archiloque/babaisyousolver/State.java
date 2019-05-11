@@ -61,6 +61,7 @@ class State {
 
   boolean tryToGo(int position, char direction) {
     int targetPosition = calculatePosition(position, direction);
+    System.out.println(targetPosition);
     int targetPositionContent = content[targetPosition];
 
     int[] newContent;
@@ -78,9 +79,19 @@ class State {
         if(!canGoThere(targetPosition, direction)) {
           return false;
         }
-        // the position after the rock
-
-        // @TODO implements this
+        // the position behind  the rock
+        int behindTheRockPosition = calculatePosition(targetPosition, direction);
+        int behindTheRockPositionContent = content[behindTheRockPosition];
+        // it it empty?
+        if(behindTheRockPositionContent != Tiles.EMPTY) {
+          return false;
+        }
+        // nice, we build the new content
+        newContent = content.clone();
+        newContent[targetPosition] = Tiles.BABA;
+        newContent[position] = Tiles.EMPTY;
+        newContent[behindTheRockPosition] = Tiles.ROCK;
+        level.addState(newContent);
         return false;
       case Tiles.FLAG:
         return true;
@@ -89,7 +100,7 @@ class State {
     }
   }
 
-  private int calculatePosition(int position, char direction) {
+  int calculatePosition(int position, char direction) {
     switch (direction) {
       case Direction.UP:
         return position - level.width;
