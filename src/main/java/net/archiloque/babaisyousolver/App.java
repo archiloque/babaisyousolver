@@ -42,14 +42,13 @@ public class App {
     char[] solution = level.solve();
     long stopTime = System.nanoTime();
     if (solution != null) {
-      List<String> solutionString = solutionString(solution);
       print(
           path,
           "Solved in " +
               LocalTime.MIN.plusNanos(
                   (stopTime - startTime)).toString() +
               " " +
-              String.join(" ", solutionString));
+              prettyPrintSolution(solution));
     } else {
       print(
           path,
@@ -58,8 +57,7 @@ public class App {
     }
   }
 
-  @NotNull
-  private static List<String> solutionString(char[] solution) {
+  private static @NotNull String prettyPrintSolution(char[] solution) {
     List<String> solutionString = new ArrayList<>();
     char currentMovement = '0';
     int numberOfMovesThisWay = 1;
@@ -75,10 +73,11 @@ public class App {
         numberOfMovesThisWay += 1;
       }
     }
+    // complete with last move
     solutionString.
         add("" + numberOfMovesThisWay + currentMovement);
 
-    return solutionString;
+    return String.join(" ", solutionString);
   }
 
   private static void print(

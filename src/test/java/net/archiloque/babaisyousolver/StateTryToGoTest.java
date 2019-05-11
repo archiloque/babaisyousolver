@@ -31,7 +31,6 @@ class StateTryToGoTest {
     }
   }
 
-
   /**
    * Cases are tested with a level of ?x1
    * Baba is in the first position and tries to go left

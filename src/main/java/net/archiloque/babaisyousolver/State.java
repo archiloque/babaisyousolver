@@ -26,7 +26,7 @@ class State {
   /**
    * Process the current state
    *
-   * @return true if we found a solution
+   * @return the path to the solution if found, null if not.
    */
   @Nullable char[] processState() {
     int babaPosition = findBaba();
