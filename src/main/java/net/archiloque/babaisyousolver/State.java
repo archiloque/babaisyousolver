@@ -1,6 +1,7 @@
 package net.archiloque.babaisyousolver;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 class State {
 
@@ -11,11 +12,15 @@ class State {
    */
   private final @NotNull int[] content;
 
+  private final @NotNull char[] previousMovements;
+
   State(
       @NotNull Level level,
-      @NotNull int[] content) {
+      @NotNull int[] content,
+      @NotNull char[] movements) {
     this.level = level;
     this.content = content;
+    this.previousMovements = movements;
   }
 
   /**
@@ -23,84 +28,101 @@ class State {
    *
    * @return true if we found a solution
    */
-  boolean processState() {
+  @Nullable char[] processState() {
     int babaPosition = findBaba();
     int babaLine = babaPosition / level.width;
     int babaColumn = babaPosition % level.width;
 
+    char[] result;
     // Up
     if (babaLine > 0) {
-      if (tryToGo(babaPosition, Direction.UP)) {
-        return true;
+      result = tryToGo(babaPosition, Direction.UP);
+      if (result != null) {
+        return result;
       }
     }
 
     // Down
     if (babaLine < (level.height - 1)) {
-      if (tryToGo(babaPosition, Direction.DOWN)) {
-        return true;
+      result = tryToGo(babaPosition, Direction.DOWN);
+      if (result != null) {
+        return result;
       }
     }
 
     // Left
     if (babaColumn > 0) {
-      if (tryToGo(babaPosition, Direction.LEFT)) {
-        return true;
+      result = tryToGo(babaPosition, Direction.LEFT);
+      if (result != null) {
+        return result;
       }
     }
 
     // Right
     if (babaColumn < (level.width - 1)) {
-      if (tryToGo(babaPosition, Direction.RIGHT)) {
-        return true;
+      result = tryToGo(babaPosition, Direction.RIGHT);
+      if (result != null) {
+        return result;
       }
     }
 
-    return false;
+    return null;
   }
 
-  boolean tryToGo(int position, char direction) {
-    int targetPosition = calculatePosition(position, direction);
-    System.out.println(targetPosition);
+  @Nullable char[] tryToGo(
+      int currentPosition,
+      char direction) {
+    int targetPosition = calculatePosition(currentPosition, direction);
     int targetPositionContent = content[targetPosition];
 
     int[] newContent;
     switch (targetPositionContent) {
       case Tiles.WALL:
-        return false;
+        return null;
       case Tiles.EMPTY:
         newContent = content.clone();
         newContent[targetPosition] = Tiles.BABA;
-        newContent[position] = Tiles.EMPTY;
-        level.addState(newContent);
-        return false;
+        newContent[currentPosition] = Tiles.EMPTY;
+        level.addState(newContent, addMovement(direction));
+        return null;
       case Tiles.ROCK:
         // did we reach the border of the level ?
-        if(!canGoThere(targetPosition, direction)) {
-          return false;
+        if (!canGoThere(targetPosition, direction)) {
+          return null;
         }
         // the position behind  the rock
         int behindTheRockPosition = calculatePosition(targetPosition, direction);
         int behindTheRockPositionContent = content[behindTheRockPosition];
         // it it empty?
-        if(behindTheRockPositionContent != Tiles.EMPTY) {
-          return false;
+        if (behindTheRockPositionContent != Tiles.EMPTY) {
+          return null;
         }
         // nice, we build the new content
         newContent = content.clone();
         newContent[targetPosition] = Tiles.BABA;
-        newContent[position] = Tiles.EMPTY;
+        newContent[currentPosition] = Tiles.EMPTY;
         newContent[behindTheRockPosition] = Tiles.ROCK;
-        level.addState(newContent);
-        return false;
+        level.addState(newContent, addMovement(direction));
+        return null;
       case Tiles.FLAG:
-        return true;
+        return addMovement(direction);
       default:
         throw new IllegalArgumentException("" + targetPositionContent);
     }
   }
 
-  int calculatePosition(int position, char direction) {
+  /**
+   * Add a new movement at the end of the array
+   */
+  private @NotNull char[] addMovement(char movement) {
+    int previousLength = previousMovements.length;
+    char[] result = new char[previousLength + 1];
+    System.arraycopy(previousMovements, 0, result, 0, previousLength);
+    result[previousLength] = movement;
+    return result;
+  }
+
+  private int calculatePosition(int position, char direction) {
     switch (direction) {
       case Direction.UP:
         return position - level.width;

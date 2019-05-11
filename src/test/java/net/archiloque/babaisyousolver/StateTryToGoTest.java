@@ -1,6 +1,7 @@
 package net.archiloque.babaisyousolver;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -23,7 +24,9 @@ class StateTryToGoTest {
     }
 
     @Override
-    void addState(@NotNull int[] content) {
+    void addState(
+        @NotNull int[] content,
+        @NotNull char[] movement) {
       states.add(content);
     }
   }
@@ -35,14 +38,14 @@ class StateTryToGoTest {
    */
   void checkMoveSimple(
       int[] content,
-      boolean result,
-      int[][] possibleNextMoves) {
+      @Nullable char[] result,
+      @NotNull int[][] possibleNextMoves) {
     LevelToTestTryToGo level = new LevelToTestTryToGo(
         content.length,
         1,
         content);
-    State state = new State(level, content);
-    assertEquals(
+    State state = new State(level, content, new char[0]);
+    assertArrayEquals(
         result,
         state.tryToGo(0, Direction.RIGHT));
     assertEquals(possibleNextMoves.length, level.states.size());
@@ -57,7 +60,7 @@ class StateTryToGoTest {
   void testMoveEmpty() {
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.EMPTY},
-        false,
+        null,
         new int[][]{new int[]{Tiles.EMPTY, Tiles.BABA}}
     );
   }
@@ -66,7 +69,7 @@ class StateTryToGoTest {
   void testMoveWall() {
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.WALL},
-        false,
+        null,
         new int[0][]
     );
   }
@@ -75,7 +78,7 @@ class StateTryToGoTest {
   void testMoveFlag() {
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.FLAG},
-        true,
+        new char[]{Direction.RIGHT},
         new int[0][]
     );
   }
@@ -84,21 +87,21 @@ class StateTryToGoTest {
   void testMoveRock() {
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.ROCK},
-        false,
+        null,
         new int[0][]
     );
 
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.ROCK, Tiles.ROCK},
-        false,
+        null,
         new int[0][]
     );
 
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.ROCK, Tiles.EMPTY},
-        false,
+        null,
         new int[][]{new int[]{Tiles.EMPTY, Tiles.BABA, Tiles.ROCK}}
     );
   }
-  
+
 }

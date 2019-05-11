@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Entry point
@@ -37,19 +39,46 @@ public class App {
     level.createInitStates();
     print(path, "Solving level");
     long startTime = System.nanoTime();
-    State solution = level.solve();
+    char[] solution = level.solve();
     long stopTime = System.nanoTime();
     if (solution != null) {
+      List<String> solutionString = solutionString(solution);
       print(
           path,
           "Solved in " +
-              LocalTime.MIN.plusNanos((stopTime - startTime)).toString());
+              LocalTime.MIN.plusNanos(
+                  (stopTime - startTime)).toString() +
+              " " +
+              String.join(" ", solutionString));
     } else {
       print(
           path,
           "Failed in " +
               LocalTime.MIN.plusNanos((stopTime - startTime)).toString());
     }
+  }
+
+  @NotNull
+  private static List<String> solutionString(char[] solution) {
+    List<String> solutionString = new ArrayList<>();
+    char currentMovement = '0';
+    int numberOfMovesThisWay = 1;
+    for (char c : solution) {
+      if (c != currentMovement) {
+        if (currentMovement != '0') {
+          solutionString.
+              add("" + numberOfMovesThisWay + currentMovement);
+        }
+        currentMovement = c;
+        numberOfMovesThisWay = 1;
+      } else {
+        numberOfMovesThisWay += 1;
+      }
+    }
+    solutionString.
+        add("" + numberOfMovesThisWay + currentMovement);
+
+    return solutionString;
   }
 
   private static void print(

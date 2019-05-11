@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  * and check where we can go
  */
 class StateAvailableMovementsTest {
-  
+
   /**
    * {@link State} that records the possible moves
    */
@@ -29,13 +29,13 @@ class StateAvailableMovementsTest {
     StateToTestAvailableMovements(
         @NotNull Level level,
         @NotNull int[] content) {
-      super(level, content);
+      super(level, content, new char[0]);
     }
 
     @Override
-    boolean tryToGo(int babaPosition, char position) {
+    char[] tryToGo(int currentPosition, char position) {
       movements.add(position);
-      return false;
+      return null;
     }
   }
 
