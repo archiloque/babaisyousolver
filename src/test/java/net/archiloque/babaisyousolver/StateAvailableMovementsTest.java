@@ -7,21 +7,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.archiloque.babaisyousolver.Direction.DOWN;
+import static net.archiloque.babaisyousolver.Direction.LEFT;
+import static net.archiloque.babaisyousolver.Direction.RIGHT;
+import static net.archiloque.babaisyousolver.Direction.UP;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+/**
+ * Try every positions on a 3*3 level
+ * and check where we can go
+ */
 class StateAvailableMovementsTest {
-
-  private static final int[] UP = new int[]{-1, 0};
-  private static final int[] DOWN = new int[]{1, 0};
-  private static final int[] LEFT = new int[]{0, -1};
-  private static final int[] RIGHT = new int[]{0, 1};
-
+  
   /**
    * {@link State} that records the possible moves
    */
   private static final class StateToTestAvailableMovements extends State {
 
-    private final List<int[]> movements = new ArrayList<>();
+    private final List<Character> movements = new ArrayList<>();
 
     StateToTestAvailableMovements(
         @NotNull Level level,
@@ -30,15 +33,15 @@ class StateAvailableMovementsTest {
     }
 
     @Override
-    boolean tryToGo(int babaPosition, int deltaLine, int deltaColumn) {
-      movements.add(new int[]{deltaLine, deltaColumn});
+    boolean tryToGo(int babaPosition, char position) {
+      movements.add(position);
       return false;
     }
   }
 
   private void checkAvailableMovements(
       int babaIndex,
-      @NotNull int[][] movements) {
+      @NotNull Character[] movements) {
     int[] levelContent = new int[9];
     Arrays.fill(levelContent, Tiles.EMPTY);
     levelContent[babaIndex] = Tiles.BABA;
@@ -52,23 +55,23 @@ class StateAvailableMovementsTest {
   @Test
   void testAvailableMovement() {
     checkAvailableMovements(0,
-        new int[][]{DOWN, RIGHT});
+        new Character[]{DOWN, RIGHT});
     checkAvailableMovements(1,
-        new int[][]{DOWN, LEFT, RIGHT});
+        new Character[]{DOWN, LEFT, RIGHT});
     checkAvailableMovements(2,
-        new int[][]{DOWN, LEFT});
+        new Character[]{DOWN, LEFT});
     checkAvailableMovements(3,
-        new int[][]{UP, DOWN, RIGHT});
+        new Character[]{UP, DOWN, RIGHT});
     checkAvailableMovements(4,
-        new int[][]{UP, DOWN, LEFT, RIGHT});
+        new Character[]{UP, DOWN, LEFT, RIGHT});
     checkAvailableMovements(5,
-        new int[][]{UP, DOWN, LEFT});
+        new Character[]{UP, DOWN, LEFT});
     checkAvailableMovements(6,
-        new int[][]{UP, RIGHT});
+        new Character[]{UP, RIGHT});
     checkAvailableMovements(7,
-        new int[][]{UP, LEFT, RIGHT});
+        new Character[]{UP, LEFT, RIGHT});
     checkAvailableMovements(8,
-        new int[][]{UP, LEFT});
+        new Character[]{UP, LEFT});
   }
 
 }

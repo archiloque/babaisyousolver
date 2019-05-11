@@ -6,27 +6,24 @@ package net.archiloque.babaisyousolver;
  * of the items in {@link Tiles#ALL_STRINGS}
  * matches the values of the int items.
  */
-final class Tiles {
+interface Tiles {
 
-  private Tiles() {
-  }
+  String BABA_STRING = "Baba";
+  String BABA_TEXT_STRING = "Baba text";
+  String EMPTY_STRING = "empty";
+  String FLAG_STRING = "flag";
+  String FLAG_TEXT_STRING = "flag text";
+  String IS_TEXT_STRING = "is text";
+  String PUSH_TEXT_STRING = "push text";
+  String ROCK_STRING = "rock";
+  String ROCK_TEXT_STRING = "rock text";
+  String STOP_TEXT_STRING = "stop text";
+  String WALL_STRING = "wall";
+  String WALL_TEXT_STRING = "wall text";
+  String WIN_TEXT_STRING = "win text";
+  String YOU_TEXT_STRING = "you text";
 
-  static final String BABA_STRING = "Baba";
-  static final String BABA_TEXT_STRING = "Baba text";
-  static final String EMPTY_STRING = "empty";
-  static final String FLAG_STRING = "flag";
-  static final String FLAG_TEXT_STRING = "flag text";
-  static final String IS_TEXT_STRING = "is text";
-  static final String PUSH_TEXT_STRING = "push text";
-  static final String ROCK_STRING = "rock";
-  static final String ROCK_TEXT_STRING = "rock text";
-  static final String STOP_TEXT_STRING = "stop text";
-  static final String WALL_STRING = "wall";
-  static final String WALL_TEXT_STRING = "wall text";
-  static final String WIN_TEXT_STRING = "win text";
-  static final String YOU_TEXT_STRING = "you text";
-
-  static final String[] ALL_STRINGS = new String[]{
+  String[] ALL_STRINGS = new String[]{
       BABA_STRING,
       BABA_TEXT_STRING,
       EMPTY_STRING,
@@ -43,18 +40,18 @@ final class Tiles {
       YOU_TEXT_STRING,
   };
 
-  static final int BABA = 0;
-  static final int BABA_TEXT = BABA + 1;
-  static final int EMPTY = BABA_TEXT + 1;
-  static final int FLAG = EMPTY + 1;
-  static final int FLAG_TEXT = FLAG + 1;
-  static final int IS_TEXT = FLAG_TEXT + 1;
-  static final int PUSH_TEXT = IS_TEXT + 1;
-  static final int ROCK = PUSH_TEXT + 1;
-  static final int ROCK_TEXT = ROCK + 1;
-  static final int STOP_TEXT = ROCK_TEXT + 1;
-  static final int WALL = STOP_TEXT + 1;
-  static final int WALL_TEXT = WALL + 1;
-  static final int WIN_TEXT = WALL_TEXT + 1;
-  static final int YOU_TEXT = WIN_TEXT + 1;
+  int BABA = 0;
+  int BABA_TEXT = BABA + 1;
+  int EMPTY = BABA_TEXT + 1;
+  int FLAG = EMPTY + 1;
+  int FLAG_TEXT = FLAG + 1;
+  int IS_TEXT = FLAG_TEXT + 1;
+  int PUSH_TEXT = IS_TEXT + 1;
+  int ROCK = PUSH_TEXT + 1;
+  int ROCK_TEXT = ROCK + 1;
+  int STOP_TEXT = ROCK_TEXT + 1;
+  int WALL = STOP_TEXT + 1;
+  int WALL_TEXT = WALL + 1;
+  int WIN_TEXT = WALL_TEXT + 1;
+  int YOU_TEXT = WIN_TEXT + 1;
 }

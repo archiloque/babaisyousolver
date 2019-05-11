@@ -29,7 +29,8 @@ class StateTryToGoTest {
   }
 
   /**
-   * Simple case are tested with a level of 2x1
+   * Simple cases are tested with a level of 2x1
+   * Baba is in the first position and tries to go left
    */
   void checkMoveSimple(
       int[] content,
@@ -42,7 +43,7 @@ class StateTryToGoTest {
     State state = new State(level, content);
     assertEquals(
         result,
-        state.tryToGo(0, 0, 1));
+        state.tryToGo(0, Direction.RIGHT));
     assertEquals(possibleNextMoves.length, level.states.size());
     for (int i = 0; i < possibleNextMoves.length; i++) {
       assertArrayEquals(
@@ -68,7 +69,6 @@ class StateTryToGoTest {
         new int[0][]
     );
   }
-
 
   @Test
   void testMoveFlag() {

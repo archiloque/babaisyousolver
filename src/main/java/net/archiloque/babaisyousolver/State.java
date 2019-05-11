@@ -30,28 +30,28 @@ class State {
 
     // Up
     if (babaLine > 0) {
-      if (tryToGo(babaPosition, -1, 0)) {
+      if (tryToGo(babaPosition, Direction.UP)) {
         return true;
       }
     }
 
     // Down
     if (babaLine < (level.height - 1)) {
-      if (tryToGo(babaPosition, 1, 0)) {
+      if (tryToGo(babaPosition, Direction.DOWN)) {
         return true;
       }
     }
 
     // Left
     if (babaColumn > 0) {
-      if (tryToGo(babaPosition, 0, -1)) {
+      if (tryToGo(babaPosition, Direction.LEFT)) {
         return true;
       }
     }
 
     // Right
     if (babaColumn < (level.width - 1)) {
-      if (tryToGo(babaPosition, 0, +1)) {
+      if (tryToGo(babaPosition, Direction.RIGHT)) {
         return true;
       }
     }
@@ -59,8 +59,25 @@ class State {
     return false;
   }
 
-  boolean tryToGo(int position, int deltaLine, int deltaColumn) {
-    int targetPosition = position + (deltaLine * level.width) + deltaColumn;
+  boolean tryToGo(int position, char direction) {
+    int targetPosition;
+    switch (direction) {
+      case Direction.UP:
+        targetPosition = position - level.width;
+        break;
+      case Direction.DOWN:
+        targetPosition = position + level.width;
+        break;
+      case Direction.LEFT:
+        targetPosition = position - 1;
+        break;
+      case Direction.RIGHT:
+        targetPosition = position + 1;
+        break;
+      default:
+        throw new IllegalArgumentException("" + direction);
+    }
+
     int targetPositionContent = content[targetPosition];
 
     int[] newContent;
@@ -74,11 +91,6 @@ class State {
         level.addState(newContent);
         return false;
       case Tiles.ROCK:
-        int currentTargetPosition = targetPosition;
-        while(true) {
-          currentTargetPosition = currentTargetPosition + (deltaLine * level.width) + deltaColumn;;
-          if()
-        }
         // @TODO implements this
         return false;
       case Tiles.FLAG:
