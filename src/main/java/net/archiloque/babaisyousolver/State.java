@@ -74,6 +74,11 @@ class State {
         level.addState(newContent);
         return false;
       case Tiles.ROCK:
+        int currentTargetPosition = targetPosition;
+        while(true) {
+          currentTargetPosition = currentTargetPosition + (deltaLine * level.width) + deltaColumn;;
+          if()
+        }
         // @TODO implements this
         return false;
       case Tiles.FLAG:
@@ -88,7 +93,7 @@ class State {
    *
    * @return the position or -1 if not found
    */
-  int findBaba() {
+  private int findBaba() {
     for (int i = 0; i < content.length; i++) {
       if (content[i] == Tiles.BABA) {
         return i;
