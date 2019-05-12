@@ -24,16 +24,16 @@ class StateAvailableMovementsTest {
    */
   private static final class StateToTestAvailableMovements extends State {
 
-    private final List<Character> movements = new ArrayList<>();
+    private final List<Byte> movements = new ArrayList<>();
 
     StateToTestAvailableMovements(
         @NotNull Level level,
         @NotNull int[] content) {
-      super(level, content, new char[0]);
+      super(level, content, new byte[0]);
     }
 
     @Override
-    char[] tryToGo(int currentPosition, char position) {
+    byte[] tryToGo(int currentPosition, byte position) {
       movements.add(position);
       return null;
     }
@@ -41,7 +41,7 @@ class StateAvailableMovementsTest {
 
   private void checkAvailableMovements(
       int babaIndex,
-      @NotNull Character[] movements) {
+      @NotNull Byte[] movements) {
     int[] levelContent = new int[9];
     Arrays.fill(levelContent, Tiles.EMPTY);
     levelContent[babaIndex] = Tiles.BABA;
@@ -55,23 +55,23 @@ class StateAvailableMovementsTest {
   @Test
   void testAvailableMovement() {
     checkAvailableMovements(0,
-        new Character[]{DOWN, RIGHT});
+        new Byte[]{DOWN, RIGHT});
     checkAvailableMovements(1,
-        new Character[]{DOWN, LEFT, RIGHT});
+        new Byte[]{DOWN, LEFT, RIGHT});
     checkAvailableMovements(2,
-        new Character[]{DOWN, LEFT});
+        new Byte[]{DOWN, LEFT});
     checkAvailableMovements(3,
-        new Character[]{UP, DOWN, RIGHT});
+        new Byte[]{UP, DOWN, RIGHT});
     checkAvailableMovements(4,
-        new Character[]{UP, DOWN, LEFT, RIGHT});
+        new Byte[]{UP, DOWN, LEFT, RIGHT});
     checkAvailableMovements(5,
-        new Character[]{UP, DOWN, LEFT});
+        new Byte[]{UP, DOWN, LEFT});
     checkAvailableMovements(6,
-        new Character[]{UP, RIGHT});
+        new Byte[]{UP, RIGHT});
     checkAvailableMovements(7,
-        new Character[]{UP, LEFT, RIGHT});
+        new Byte[]{UP, LEFT, RIGHT});
     checkAvailableMovements(8,
-        new Character[]{UP, LEFT});
+        new Byte[]{UP, LEFT});
   }
 
 }

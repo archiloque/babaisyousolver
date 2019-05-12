@@ -26,7 +26,7 @@ class StateTryToGoTest {
     @Override
     void addState(
         @NotNull int[] content,
-        @NotNull char[] movement) {
+        @NotNull byte[] movement) {
       states.add(content);
     }
   }
@@ -37,13 +37,13 @@ class StateTryToGoTest {
    */
   void checkMoveSimple(
       int[] content,
-      @Nullable char[] result,
+      @Nullable byte[] result,
       @NotNull int[][] possibleNextMoves) {
     LevelToTestTryToGo level = new LevelToTestTryToGo(
         content.length,
         1,
         content);
-    State state = new State(level, content, new char[0]);
+    State state = new State(level, content, new byte[0]);
     assertArrayEquals(
         result,
         state.tryToGo(0, Direction.RIGHT));
@@ -77,7 +77,7 @@ class StateTryToGoTest {
   void testMoveFlag() {
     checkMoveSimple(
         new int[]{Tiles.BABA, Tiles.FLAG},
-        new char[]{Direction.RIGHT},
+        new byte[]{Direction.RIGHT},
         new int[0][]
     );
   }

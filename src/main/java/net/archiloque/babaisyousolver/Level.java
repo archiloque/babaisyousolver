@@ -48,12 +48,12 @@ class Level {
   }
 
   void createInitStates() {
-    addState(content, new char[0]);
+    addState(content, new byte[0]);
   }
 
   void addState(
       @NotNull int[] content,
-      @NotNull char[] movements
+      @NotNull byte[] movements
   ) {
     if (!pastStates.contains(content)) {
       pastStates.add(content);
@@ -61,8 +61,8 @@ class Level {
     }
   }
 
-  @Nullable char[] solve() {
-    char[] result;
+  @Nullable byte[] solve() {
+    byte[] result;
     while (!states.isEmpty()) {
       State state = states.pop();
       result = state.processState();

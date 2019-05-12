@@ -12,12 +12,12 @@ class State {
    */
   private final @NotNull int[] content;
 
-  private final @NotNull char[] previousMovements;
+  private final @NotNull byte[] previousMovements;
 
   State(
       @NotNull Level level,
       @NotNull int[] content,
-      @NotNull char[] movements) {
+      @NotNull byte[] movements) {
     this.level = level;
     this.content = content;
     this.previousMovements = movements;
@@ -28,12 +28,12 @@ class State {
    *
    * @return the path to the solution if found, null if not.
    */
-  @Nullable char[] processState() {
+  @Nullable byte[] processState() {
     int babaPosition = findBaba();
     int babaLine = babaPosition / level.width;
     int babaColumn = babaPosition % level.width;
 
-    char[] result;
+    byte[] result;
     // Up
     if (babaLine > 0) {
       result = tryToGo(babaPosition, Direction.UP);
@@ -69,9 +69,9 @@ class State {
     return null;
   }
 
-  @Nullable char[] tryToGo(
+  @Nullable byte[] tryToGo(
       int currentPosition,
-      char direction) {
+      byte direction) {
     int targetPosition = calculatePosition(currentPosition, direction);
     int targetPositionContent = content[targetPosition];
 
@@ -114,15 +114,15 @@ class State {
   /**
    * Add a new movement at the end of the array
    */
-  private @NotNull char[] addMovement(char movement) {
+  private @NotNull byte[] addMovement(byte movement) {
     int previousLength = previousMovements.length;
-    char[] result = new char[previousLength + 1];
+    byte[] result = new byte[previousLength + 1];
     System.arraycopy(previousMovements, 0, result, 0, previousLength);
     result[previousLength] = movement;
     return result;
   }
 
-  private int calculatePosition(int position, char direction) {
+  private int calculatePosition(int position, byte direction) {
     switch (direction) {
       case Direction.UP:
         return position - level.width;
@@ -140,7 +140,7 @@ class State {
   /**
    * Test if we can go on a direction from a position
    */
-  private boolean canGoThere(int targetPosition, char direction) {
+  private boolean canGoThere(int targetPosition, byte direction) {
     int targetPositionLine = targetPosition / level.width;
     int targetPositionColumn = targetPosition % level.width;
 
