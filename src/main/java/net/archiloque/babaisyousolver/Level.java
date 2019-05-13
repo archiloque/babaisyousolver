@@ -10,45 +10,52 @@ import java.util.TreeSet;
 class Level {
 
   final int width;
-
   final int height;
-
-  final int size;
+  private final int size;
 
   /**
    * This set will be able to handle duplication of {@link State}
    * The custom {@link Comparator} is required to avoid
    * only comparing the arrays' addresses
    */
-  private final Set<int[]> pastStates = new TreeSet<>(new Comparator<>() {
-    @Override
-    public int compare(int[] o1, int[] o2) {
-      for (int i = 0; i < size; i++) {
-        int cmp = o2[i] - o1[i];
-        if (cmp != 0) {
-          return cmp;
+  private final Set<int[]> pastStates =
+      new TreeSet<>(new Comparator<>() {
+        @Override
+        public int compare(int[] o1, int[] o2) {
+          for (int i = 0; i < size; i++) {
+            int cmp = o2[i] - o1[i];
+            if (cmp != 0) {
+              return cmp;
+            }
+          }
+          return 0;
         }
-      }
-      return 0;
-    }
-  });
+      });
 
-  final @NotNull int[] content;
+  private final @NotNull int[] originalContent;
 
-  final @NotNull FiFoQueue<State> states = new FiFoQueue<>();
+  private final @NotNull FiFoQueue<State> states =
+      new FiFoQueue<>();
 
   Level(
       int width,
       int height,
-      @NotNull int[] content) {
+      @NotNull int[] originalContent) {
     this.width = width;
     this.height = height;
     this.size = width * height;
-    this.content = content;
+    this.originalContent = originalContent;
   }
 
   void createInitStates() {
-    addState(content, new byte[0]);
+    int[] contentForState = new int[size];
+    for (int i = 0; i < size; i++) {
+      int originalTile = originalContent[i];
+      if (originalTile != 0) {
+        contentForState[i] = (1 << originalTile - 1);
+      }
+    }
+    addState(contentForState, new byte[0]);
   }
 
   void addState(

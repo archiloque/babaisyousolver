@@ -8,7 +8,8 @@ class State {
   private final @NotNull Level level;
 
   /**
-   * Probably not the right format, just drafting
+   * Bit field, contain values at positions indicated by the items in
+   * {@link Tiles}
    */
   private final @NotNull int[] content;
 
@@ -25,8 +26,8 @@ class State {
 
   /**
    * Process the current state
-   *
-   * @return the path to the solution if found, null if not.
+   * @return a list of {@link Direction} if we found a solution,
+   * else null
    */
   @Nullable byte[] processState() {
     int babaPosition = findBaba();
@@ -69,6 +70,11 @@ class State {
     return null;
   }
 
+  /**
+   * Try to go on a direction from a position
+   * @return a list of {@link Direction} if we found a solution,
+   * else null
+   */
   @Nullable byte[] tryToGo(
       int currentPosition,
       byte direction) {
@@ -76,39 +82,43 @@ class State {
     int targetPositionContent = content[targetPosition];
 
     int[] newContent;
-    switch (targetPositionContent) {
-      case Tiles.WALL:
-        return null;
-      case Tiles.EMPTY:
-        newContent = content.clone();
-        newContent[targetPosition] = Tiles.BABA;
-        newContent[currentPosition] = Tiles.EMPTY;
-        level.addState(newContent, addMovement(direction));
-        return null;
-      case Tiles.ROCK:
-        // did we reach the border of the level ?
-        if (!canGoThere(targetPosition, direction)) {
-          return null;
-        }
-        // the position behind  the rock
-        int behindTheRockPosition = calculatePosition(targetPosition, direction);
-        int behindTheRockPositionContent = content[behindTheRockPosition];
-        // it it empty?
-        if (behindTheRockPositionContent != Tiles.EMPTY) {
-          return null;
-        }
-        // nice, we build the new content
-        newContent = content.clone();
-        newContent[targetPosition] = Tiles.BABA;
-        newContent[currentPosition] = Tiles.EMPTY;
-        newContent[behindTheRockPosition] = Tiles.ROCK;
-        level.addState(newContent, addMovement(direction));
-        return null;
-      case Tiles.FLAG:
-        return addMovement(direction);
-      default:
-        throw new IllegalArgumentException("" + targetPositionContent);
+    if((targetPositionContent & Tiles.WALL_MASK) != 0) {
+      return null;
     }
+    newContent = content.clone();
+
+    // target is empty
+    if(targetPositionContent == 0) {
+      newContent[targetPosition] = newContent[targetPosition] | Tiles.BABA_MASK;
+      newContent[currentPosition] = newContent[currentPosition] ^ Tiles.BABA_MASK;
+      level.addState(newContent, addMovement(direction));
+      return null;
+    }
+    if((targetPositionContent & Tiles.ROCK_MASK) != 0) {
+      // did we reach the border of the level ?
+      if (!canGoThere(targetPosition, direction)) {
+        return null;
+      }
+      // the position behind  the rock
+      int behindTheRockPosition = calculatePosition(targetPosition, direction);
+      int behindTheRockPositionContent = content[behindTheRockPosition];
+      // it it a rock
+      if ((behindTheRockPositionContent & (Tiles.ROCK_MASK | Tiles.WALL_MASK)) != 0) {
+        return null;
+      }
+      // nice, we build the new content
+      targetPositionContent = newContent[targetPosition] ^ Tiles.ROCK_MASK;
+      newContent[targetPosition] = targetPositionContent;
+      newContent[behindTheRockPosition] = newContent[behindTheRockPosition] | Tiles.ROCK_MASK;
+    }
+    if((targetPositionContent & Tiles.FLAG_MASK) != 0) {
+      return addMovement(direction);
+    }
+
+    newContent[targetPosition] = newContent[targetPosition] | Tiles.BABA_MASK;
+    newContent[currentPosition] = newContent[currentPosition] ^ Tiles.BABA_MASK;
+    level.addState(newContent, addMovement(direction));
+    return null;
   }
 
   /**
@@ -122,15 +132,23 @@ class State {
     return result;
   }
 
+  /**
+   * Calculate the index of a position after a move
+   */
   private int calculatePosition(int position, byte direction) {
+    // Content is stored as a single array one line after another
     switch (direction) {
       case Direction.UP:
+        // up: go back one row
         return position - level.width;
       case Direction.DOWN:
+        // down: go further one row
         return position + level.width;
       case Direction.LEFT:
+        // left : go back one item
         return position - 1;
       case Direction.RIGHT:
+        // left : go further one item
         return position + 1;
       default:
         throw new IllegalArgumentException("" + direction);
@@ -165,7 +183,7 @@ class State {
    */
   private int findBaba() {
     for (int i = 0; i < content.length; i++) {
-      if (content[i] == Tiles.BABA) {
+      if ((content[i] & Tiles.BABA_MASK) != 0) {
         return i;
       }
     }

@@ -1,6 +1,7 @@
 package net.archiloque.babaisyousolver;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,7 +56,8 @@ final class LevelReader {
       }
       Character character = m.group(1).charAt(0);
       String tile = m.group(2);
-      int index = Arrays.binarySearch(Tiles.ALL_STRINGS, tile);
+
+      int index = findIndexOfTile(tile);
       if (index < 0) {
         throw new IllegalArgumentException(
             "Unknown tile [" + tile + "]");
@@ -63,6 +65,20 @@ final class LevelReader {
       result.put(character, index);
     }
     return result;
+  }
+
+  /**
+   * Find the index of a {@link Tiles} from its name
+   * @param tileName the index or -1 if not found
+   */
+  private static int findIndexOfTile(
+      @NotNull String tileName) {
+    for (int index = 0; index < Tiles.ALL_STRINGS.length; index++) {
+      if(tileName.equals(Tiles.ALL_STRINGS[index])) {
+        return index;
+      }
+    }
+    return -1;
   }
 
   /**
@@ -129,9 +145,7 @@ final class LevelReader {
   static final class LevelReaderResult {
 
     final int width;
-
     final int height;
-
     final @NotNull int[] content;
 
     LevelReaderResult(

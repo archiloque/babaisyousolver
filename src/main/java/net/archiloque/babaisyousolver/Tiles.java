@@ -8,9 +8,9 @@ package net.archiloque.babaisyousolver;
  */
 interface Tiles {
 
+  String EMPTY_STRING = "empty";
   String BABA_STRING = "Baba";
   String BABA_TEXT_STRING = "Baba text";
-  String EMPTY_STRING = "empty";
   String FLAG_STRING = "flag";
   String FLAG_TEXT_STRING = "flag text";
   String IS_TEXT_STRING = "is text";
@@ -24,9 +24,9 @@ interface Tiles {
   String YOU_TEXT_STRING = "you text";
 
   String[] ALL_STRINGS = new String[]{
+      EMPTY_STRING,
       BABA_STRING,
       BABA_TEXT_STRING,
-      EMPTY_STRING,
       FLAG_STRING,
       FLAG_TEXT_STRING,
       IS_TEXT_STRING,
@@ -40,10 +40,10 @@ interface Tiles {
       YOU_TEXT_STRING,
   };
 
-  int BABA = 0;
+  int EMPTY = 0;
+  int BABA = EMPTY + 1;
   int BABA_TEXT = BABA + 1;
-  int EMPTY = BABA_TEXT + 1;
-  int FLAG = EMPTY + 1;
+  int FLAG = BABA_TEXT + 1;
   int FLAG_TEXT = FLAG + 1;
   int IS_TEXT = FLAG_TEXT + 1;
   int PUSH_TEXT = IS_TEXT + 1;
@@ -54,4 +54,19 @@ interface Tiles {
   int WALL_TEXT = WALL + 1;
   int WIN_TEXT = WALL_TEXT + 1;
   int YOU_TEXT = WIN_TEXT + 1;
+
+  int BABA_MASK = 1;
+  int BABA_TEXT_MASK = 1 << 1;
+  int FLAG_MASK = 1 << 2;
+  int FLAG_TEXT_MASK = 1 << 3;
+  int IS_TEXT_MASK = 1 << 4;
+  int PUSH_TEXT_MASK = 1 << 5;
+  int ROCK_MASK = 1 << 6;
+  int ROCK_TEXT_MASK = 1 << 7;
+  int STOP_TEXT_MASK = 1 << 8;
+  int WALL_MASK = 1 << 10;
+  int WALL_TEXT_MASK = 1 << 11;
+  int WIN_TEXT_MASK = 1 << 12;
+  int YOU_TEXT_MASK = 1 << 13;
+
 }
