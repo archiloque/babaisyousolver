@@ -58,16 +58,18 @@ class StateTryToGoTest {
   @Test
   void testMoveEmpty() {
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.EMPTY},
+        new int[]{Tiles.BABA_MASK, 0},
         null,
-        new int[][]{new int[]{Tiles.EMPTY, Tiles.BABA}}
+        new int[][]{new int[]{0, Tiles.BABA_MASK}}
     );
   }
 
   @Test
   void testMoveWall() {
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.WALL},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.WALL_MASK},
         null,
         new int[0][]
     );
@@ -76,7 +78,9 @@ class StateTryToGoTest {
   @Test
   void testMoveFlag() {
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.FLAG},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.FLAG_MASK},
         new byte[]{Direction.RIGHT},
         new int[0][]
     );
@@ -85,21 +89,44 @@ class StateTryToGoTest {
   @Test
   void testMoveRock() {
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.ROCK},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK},
         null,
         new int[0][]
     );
 
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.ROCK, Tiles.ROCK},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.ROCK_MASK},
         null,
         new int[0][]
     );
 
     checkMoveSimple(
-        new int[]{Tiles.BABA, Tiles.ROCK, Tiles.EMPTY},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.EMPTY},
         null,
-        new int[][]{new int[]{Tiles.EMPTY, Tiles.BABA, Tiles.ROCK}}
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK}}
+    );
+
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_MASK},
+        null,
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK | Tiles.FLAG_MASK}}
     );
   }
 
