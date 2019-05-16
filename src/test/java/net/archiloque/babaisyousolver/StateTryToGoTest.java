@@ -36,13 +36,13 @@ class StateTryToGoTest {
    * Baba is in the first position and tries to go left
    */
   void checkMoveSimple(
-      int[] content,
+      @NotNull int[] content,
       @Nullable byte[] result,
       @NotNull int[][] possibleNextMoves) {
     LevelToTestTryToGo level = new LevelToTestTryToGo(
         content.length,
         1,
-        content);
+        new int[content.length]);
     State state = new State(level, content, new byte[0]);
     assertArrayEquals(
         result,
@@ -57,62 +57,76 @@ class StateTryToGoTest {
 
   @Test
   void testMoveEmpty() {
+    // empty
     checkMoveSimple(
-        new int[]{Tiles.BABA_MASK, 0},
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.EMPTY},
         null,
-        new int[][]{new int[]{0, Tiles.BABA_MASK}}
-    );
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK}});
   }
 
   @Test
   void testMoveWall() {
+    // wall
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.WALL_MASK},
         null,
-        new int[0][]
-    );
+        new int[0][]);
   }
 
   @Test
   void testMoveFlag() {
+    // flag
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.FLAG_MASK},
         new byte[]{Direction.RIGHT},
-        new int[0][]
-    );
+        new int[0][]);
   }
 
   @Test
   void testMoveRock() {
+    // rock
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK},
         null,
-        new int[0][]
-    );
+        new int[0][]);
 
+    // rock + flag
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK | Tiles.FLAG_MASK},
         null,
-        new int[0][]
-    );
+        new int[0][]);
 
+    // rock | rock
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.ROCK_MASK},
         null,
-        new int[0][]
-    );
+        new int[0][]);
 
+    // rock | wall
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.WALL_MASK},
+        null,
+        new int[0][]);
+
+    // rock | empty
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
@@ -122,19 +136,18 @@ class StateTryToGoTest {
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
-            Tiles.ROCK_MASK}}
-    );
+            Tiles.ROCK_MASK}});
 
-
+    // rock + flag | empty
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK | Tiles.FLAG_MASK,
             Tiles.EMPTY},
         new byte[]{Direction.RIGHT},
-        new int[0][]
-    );
+        new int[0][]);
 
+    // rock | flag
     checkMoveSimple(
         new int[]{
             Tiles.BABA_MASK,
@@ -144,8 +157,42 @@ class StateTryToGoTest {
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
-            Tiles.ROCK_MASK | Tiles.FLAG_MASK}}
-    );
+            Tiles.ROCK_MASK | Tiles.FLAG_MASK}});
+
+    // rock | rock | empty
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.EMPTY},
+        null,
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.ROCK_MASK}});
+
+    // rock | rock | wall | empty
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.WALL_MASK,
+            Tiles.EMPTY},
+        null,
+        new int[0][]);
+
+    // rock + flag | rock | empty
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK | Tiles.FLAG_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.EMPTY},
+        new byte[]{Direction.RIGHT},
+        new int[0][]);
   }
 
 }
