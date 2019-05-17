@@ -55,18 +55,22 @@ public class Main {
     fields.sort(String::compareToIgnoreCase);
     fields.add(0, "empty");
 
+    // annotation to indicates the class is generated
+    AnnotationSpec generatedAnnotation =
+        AnnotationSpec.builder(
+            Generated.class).
+            addMember(
+                "value",
+                "$S",
+                Main.class.getName()).
+            build();
+
     // initialize the interface
     TypeSpec.Builder tileInterface = TypeSpec.
-        interfaceBuilder("Tiles")
-        .addModifiers(Modifier.PUBLIC).
-            addAnnotation(
-                AnnotationSpec.builder(
-                    Generated.class).
-                    addMember(
-                        "value",
-                        "$S",
-                        Main.class.getName()).
-                    build());
+        interfaceBuilder("Tiles").
+        addModifiers(Modifier.PUBLIC).
+        addAnnotation(
+            generatedAnnotation);
 
     List<String> fieldsNames = new ArrayList<>();
 
@@ -75,8 +79,8 @@ public class Main {
       // create the constant from the field name
       String fieldConstantName =
           field.
-              toUpperCase()
-              .replace(' ', '_');
+              toUpperCase().
+              replace(' ', '_');
       fieldsNames.add(fieldConstantName);
       FieldSpec tileField = FieldSpec.
           builder(
@@ -141,8 +145,8 @@ public class Main {
     JavaFile javaFile =
         JavaFile.builder(
             "net.archiloque.babaisyousolver",
-            tileInterface.build())
-        .build();
+            tileInterface.build()).
+            build();
     javaFile.writeTo(new File(targetDir));
   }
 
