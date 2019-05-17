@@ -12,7 +12,9 @@ mvn install
 
 Run a level:
 ```
-java -jar target/babaisyousolver-1.0-SNAPSHOT.jar levels/01 
+java \
+-cp "tiles/target/babaisyousolver-tiles-1.0.0-SNAPSHOT.jar:engine/target/babaisyousolver-engine-1.0.0-SNAPSHOT.jar" \
+net.archiloque.babaisyousolver.App levels/01
 ```
 
  
