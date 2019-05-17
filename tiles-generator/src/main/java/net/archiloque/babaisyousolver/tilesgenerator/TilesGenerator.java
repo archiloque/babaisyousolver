@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entry point
+ * Entry point to generate the tiles class
  */
-public class Main {
+public class TilesGenerator {
 
   private static final String TILES_JSON_FILES = "tiles.json";
 
@@ -35,7 +35,7 @@ public class Main {
     System.out.println("Will generate in [" + targetDir + "]");
 
     // get the JSON content
-    URI jsonResourceUri = Main.
+    URI jsonResourceUri = TilesGenerator.
         class.
         getClassLoader().
         getResource(TILES_JSON_FILES).
@@ -62,7 +62,7 @@ public class Main {
             addMember(
                 "value",
                 "$S",
-                Main.class.getName()).
+                TilesGenerator.class.getName()).
             build();
 
     // initialize the interface
@@ -102,6 +102,7 @@ public class Main {
     }
     allStringCode.
         add("}");
+
     FieldSpec allStringsField = FieldSpec.
         builder(
             ArrayTypeName.of(String.class),
@@ -127,7 +128,7 @@ public class Main {
       tileInterface.addField(valueField);
     }
 
-    // the masks
+    // the masks (no masks for empty)
     for (int i = 1; i < fieldsNames.size(); i++) {
       String fieldName = fieldsNames.get(i);
       FieldSpec maskField = FieldSpec.
@@ -149,5 +150,4 @@ public class Main {
             build();
     javaFile.writeTo(new File(targetDir));
   }
-
 }

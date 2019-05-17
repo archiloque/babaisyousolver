@@ -15,7 +15,7 @@
     <name>babaisyousolver-tiles-generator</name>
 
     <properties>
-        <mainClass>net.archiloque.babaisyousolver.tilesgenerator.Main</mainClass>
+        <mainClass>net.archiloque.babaisyousolver.tilesgenerator.TilesGenerator</mainClass>
     </properties>
 
     <dependencies>

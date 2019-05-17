@@ -42,7 +42,7 @@
                 </executions>
                 <configuration>
                     <includePluginDependencies>true</includePluginDependencies>
-                    <mainClass>net.archiloque.babaisyousolver.tilesgenerator.Main</mainClass>
+                    <mainClass>net.archiloque.babaisyousolver.tilesgenerator.TilesGenerator</mainClass>
                     <sourceRoot>${generated-sources-dir}</sourceRoot>
                     <addResourcesToClasspath>true</addResourcesToClasspath>
                     <arguments>
