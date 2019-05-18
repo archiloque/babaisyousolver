@@ -15,6 +15,14 @@ class State {
 
   private final @NotNull byte[] previousMovements;
 
+  private int pushTiles = Tiles.TEXT_MASKS;
+
+  private int stopTiles = 0;
+
+  private int youTiles = 0;
+
+  private int winTiles = 0;
+
   State(
       @NotNull Level level,
       @NotNull int[] content,
@@ -26,10 +34,12 @@ class State {
 
   /**
    * Process the current state
+   *
    * @return a list of {@link Direction} if we found a solution,
    * else null
    */
   @Nullable byte[] processState() {
+    processRules();
     int babaPosition = findBaba();
     int babaLine = babaPosition / level.width;
     int babaColumn = babaPosition % level.width;
@@ -66,12 +76,12 @@ class State {
         return result;
       }
     }
-
     return null;
   }
 
   /**
    * Try to go on a direction from a position
+   *
    * @return a list of {@link Direction} if we found a solution,
    * else null
    */
@@ -82,13 +92,13 @@ class State {
     int targetPositionContent = content[targetPosition];
 
     // target contains a wall
-    if((targetPositionContent & Tiles.WALL_MASK) != 0) {
+    if ((targetPositionContent & Tiles.WALL_MASK) != 0) {
       return null;
     }
     int[] newContent = content.clone();
 
     // target is empty
-    if(targetPositionContent == 0) {
+    if (targetPositionContent == 0) {
       newContent[targetPosition] =
           newContent[targetPosition] | Tiles.BABA_MASK;
       newContent[currentPosition] =
@@ -97,12 +107,12 @@ class State {
       return null;
     }
 
-    if((targetPositionContent & Tiles.ROCK_MASK) != 0) {
+    if ((targetPositionContent & Tiles.ROCK_MASK) != 0) {
       boolean foundCellAfterRocks = false;
       int candidatePosition = targetPosition;
       // explore the next cells until we find the right stop
       // or until we find a wall or the end of the level
-      while(!foundCellAfterRocks) {
+      while (!foundCellAfterRocks) {
         // did we reach the border of the level?
         if (!canGoThere(candidatePosition, direction)) {
           return null;
@@ -137,7 +147,7 @@ class State {
       }
     }
 
-    if((targetPositionContent & Tiles.FLAG_MASK) != 0) {
+    if ((targetPositionContent & Tiles.FLAG_MASK) != 0) {
       return addMovement(direction);
     }
 
@@ -180,7 +190,7 @@ class State {
         // left : go further one item
         return position + 1;
       default:
-        throw new IllegalArgumentException("" + direction);
+        throw new IllegalArgumentException(Integer.toString(direction));
     }
   }
 
@@ -201,7 +211,64 @@ class State {
       case Direction.RIGHT:
         return targetPositionColumn != (level.width - 1);
       default:
-        throw new IllegalArgumentException("" + direction);
+        throw new IllegalArgumentException(Integer.toString(direction));
+    }
+  }
+
+  void processRules() {
+    // locate the "IS"
+    for (int i = 0; i < level.size; i++) {
+      if ((content[i] & Tiles.IS_TEXT_MASK) != 0) {
+        // any room to make an horizontal sentence ?
+        int isLine = i / level.width;
+        if ((isLine > 0) && (isLine < (level.height - 1))) {
+          checkRule(
+              i - level.width,
+              i + level.width);
+        }
+
+        // any room to make a vertical sentence ?
+        int isColumn = i % level.width;
+        if ((isColumn > 0) && (isColumn < (level.width - 1))) {
+          checkRule(
+              i - 1,
+              i + 1);
+        }
+      }
+    }
+  }
+
+  private void checkRule(
+      int beforeCellIndex,
+      int afterCellIndex) {
+    // validate it's a rule
+    int subject = content[beforeCellIndex] &
+        Tiles.SUBJECT_MASKS;
+    if (subject == 0) {
+      return;
+    }
+    int definition = content[afterCellIndex] &
+        Tiles.DEFINITION_MASKS;
+    if (definition == 0) {
+      return;
+    }
+
+    // apply the result
+    switch (definition) {
+      case Tiles.PUSH_TEXT_MASK:
+        pushTiles = pushTiles | subject;
+        return;
+      case Tiles.STOP_TEXT_MASK:
+        stopTiles = stopTiles | subject;
+        return;
+      case Tiles.WIN_TEXT_MASK:
+        winTiles = winTiles | subject;
+        return;
+      case Tiles.YOU_TEXT_MASK:
+        youTiles = youTiles | subject;
+        return;
+      default:
+        throw new IllegalArgumentException(Integer.toString(definition));
     }
   }
 
@@ -211,7 +278,7 @@ class State {
    * @return the position or -1 if not found
    */
   private int findBaba() {
-    for (int i = 0; i < content.length; i++) {
+    for (int i = 0; i < level.size; i++) {
       if ((content[i] & Tiles.BABA_MASK) != 0) {
         return i;
       }

@@ -19,7 +19,8 @@ public class App {
   private static final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.SSS");
 
-  public static void main(String[] args)
+  public static void main(
+      @NotNull String[] args)
       throws IOException {
     if (args.length == 0) {
       throw new IllegalArgumentException(
@@ -74,9 +75,9 @@ public class App {
       if (c != currentMovement) {
         if (currentMovement != -1) {
           steps.
-              add("" +
-                  numberOfMovesThisWay +
-                  Direction.VISUAL[currentMovement]);
+              add(
+                  Integer.toString(numberOfMovesThisWay) +
+                      Direction.VISUAL[currentMovement]);
         }
         currentMovement = c;
         numberOfMovesThisWay = 1;
@@ -86,9 +87,9 @@ public class App {
     }
     // complete with last move
     steps.
-        add("" +
-            numberOfMovesThisWay +
-            Direction.VISUAL[currentMovement]);
+        add(
+            Integer.toString(numberOfMovesThisWay) +
+                Direction.VISUAL[currentMovement]);
 
     String content = String.join(" ", steps);
     Files.write(solutionPath, content.getBytes());

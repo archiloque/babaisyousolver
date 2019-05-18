@@ -11,7 +11,7 @@ class Level {
 
   final int width;
   final int height;
-  private final int size;
+  final int size;
 
   /**
    * This set will be able to handle duplication of {@link State}
