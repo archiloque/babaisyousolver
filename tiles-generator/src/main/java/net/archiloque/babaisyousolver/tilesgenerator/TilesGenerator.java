@@ -17,6 +17,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -90,7 +91,6 @@ public class TilesGenerator {
     fields.sort(String::compareToIgnoreCase);
     fields.add(0, "empty");
 
-
     List<String> fieldsNames = new ArrayList<>();
 
     // declare the XXX_STRING String constants
@@ -152,6 +152,27 @@ public class TilesGenerator {
         "definition",
         "DEFINITION_MASKS"
     );
+
+    String[] subjectTargetMasks = new String[jsonObject.length()];
+    Arrays.fill(subjectTargetMasks, Integer.toString(-1));
+    for (int i = 0; i < fieldsNames.size(); i++) {
+      String fieldName = fields.get(i);
+      JSONObject fieldDeclaration = jsonObject.
+          getJSONObject(fieldName);
+
+      if (isA(fieldDeclaration, "subject")) {
+        String targetName = fieldDeclaration.getString("subjectTarget");
+        int targetIndex = fields.indexOf(targetName);
+        subjectTargetMasks[i] = Integer.toString(1 << (targetIndex - 1));
+      }
+    }
+    String content = "\nnew int[]{" +
+        String.join(", ", subjectTargetMasks) +
+        "}";
+    addField(
+        ArrayTypeName.of(TypeName.INT),
+        "TARGET_MASKS",
+        content);
 
     // create the file
     return JavaFile.builder(
@@ -228,8 +249,7 @@ public class TilesGenerator {
     for (int i = 1; i < fields.size(); i++) {
       JSONObject fieldDeclaration = jsonObject.
           getJSONObject(fields.get(i));
-      if (fieldDeclaration.has(attributeName) &&
-          fieldDeclaration.getBoolean(attributeName)) {
+      if (isA(fieldDeclaration, attributeName)) {
         mask += 1 << (i - 1);
       }
     }
@@ -237,5 +257,12 @@ public class TilesGenerator {
         TypeName.INT,
         fieldName,
         Integer.toString(mask));
+  }
+
+  private boolean isA(
+      @NotNull JSONObject fieldObject,
+      @NotNull String attributeName) {
+    return fieldObject.has(attributeName) &&
+        fieldObject.getBoolean(attributeName);
   }
 }

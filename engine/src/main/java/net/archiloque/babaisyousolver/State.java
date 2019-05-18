@@ -15,13 +15,13 @@ class State {
 
   private final @NotNull byte[] previousMovements;
 
-  private int pushTiles = Tiles.TEXT_MASKS;
+  int pushTiles = Tiles.TEXT_MASKS;
 
-  private int stopTiles = 0;
+  int stopTiles = 0;
 
-  private int youTiles = 0;
+  int youTiles = 0;
 
-  private int winTiles = 0;
+  int winTiles = 0;
 
   State(
       @NotNull Level level,
@@ -254,18 +254,19 @@ class State {
     }
 
     // apply the result
+    int targetMask = Tiles.TARGET_MASKS[subject];
     switch (definition) {
       case Tiles.PUSH_TEXT_MASK:
-        pushTiles = pushTiles | subject;
+        pushTiles = pushTiles | targetMask;
         return;
       case Tiles.STOP_TEXT_MASK:
-        stopTiles = stopTiles | subject;
+        stopTiles = stopTiles | targetMask;
         return;
       case Tiles.WIN_TEXT_MASK:
-        winTiles = winTiles | subject;
+        winTiles = winTiles | targetMask;
         return;
       case Tiles.YOU_TEXT_MASK:
-        youTiles = youTiles | subject;
+        youTiles = youTiles | targetMask;
         return;
       default:
         throw new IllegalArgumentException(Integer.toString(definition));
