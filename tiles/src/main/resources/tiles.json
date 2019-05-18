@@ -1,16 +1,42 @@
 {
   "empty": {},
   "Baba": {},
-  "Baba text": {},
+  "Baba text": {
+    "text": true,
+    "subject": true
+  },
   "flag": {},
-  "flag text": {},
-  "is text": {},
-  "push text": {},
+  "flag text": {
+    "text": true,
+    "subject": true
+  },
+  "is text": {
+    "text": true
+  },
+  "push text": {
+    "text": true,
+    "definition": true
+  },
   "rock": {},
-  "rock text": {},
-  "stop text": {},
+  "rock text": {
+    "text": true,
+    "subject": true
+  },
+  "stop text": {
+    "text": true,
+    "definition": true
+  },
   "wall": {},
-  "wall text": {},
-  "win text": {},
-  "you text": {}
+  "wall text": {
+    "text": true,
+    "subject": true
+  },
+  "win text": {
+    "text": true,
+    "definition": true
+  },
+  "you text": {
+    "text": true,
+    "definition": true
+  }
 }
