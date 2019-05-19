@@ -30,6 +30,7 @@ class StateAvailableMovementsTest {
         @NotNull Level level,
         @NotNull int[] content) {
       super(level, content, new byte[0]);
+      youTilesMask = Tiles.BABA_MASK;
     }
 
     @Override
@@ -44,8 +45,8 @@ class StateAvailableMovementsTest {
       @NotNull Byte[] movements) {
     int[] levelContent = new int[9];
     Arrays.fill(levelContent, Tiles.EMPTY);
-    levelContent[babaIndex] = Tiles.BABA;
-    Level level = new Level(3, 3, levelContent);
+    levelContent[babaIndex] = Tiles.BABA_MASK;
+    Level level = new Level(3, 3, new int[9]);
     StateToTestAvailableMovements state =
         new StateToTestAvailableMovements(level, levelContent);
     state.processState();
