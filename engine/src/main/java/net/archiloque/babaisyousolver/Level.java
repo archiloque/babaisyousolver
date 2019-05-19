@@ -34,7 +34,7 @@ class Level {
 
   private final @NotNull int[] originalContent;
 
-  private final @NotNull FiFoQueue<State> states =
+  private final @NotNull FiFoQueue<StateLite> states =
       new FiFoQueue<>();
 
   Level(
@@ -63,22 +63,37 @@ class Level {
       @NotNull int[] content,
       @NotNull byte[] movements
   ) {
-    if (!pastStates.contains(content)) {
-      pastStates.add(content);
-      states.add(new State(this, content, movements));
+    // only add if not already visited
+    if (pastStates.add(content)) {
+      states.add(new StateLite(content, movements));
     }
   }
 
   @Nullable byte[] solve() {
     byte[] result;
     while (!states.isEmpty()) {
-      State state = states.pop();
-      result = state.processState();
+      StateLite state = states.pop();
+      result = new State(
+          this,
+          state.content,
+          state.previousMovements).
+          processState();
       if (result != null) {
         return result;
       }
     }
     return null;
+  }
+
+  static class StateLite {
+    private final @NotNull int[] content;
+
+    private final @NotNull byte[] previousMovements;
+
+    StateLite(@NotNull int[] content, @NotNull byte[] previousMovements) {
+      this.content = content;
+      this.previousMovements = previousMovements;
+    }
   }
 
 }

@@ -15,13 +15,13 @@ class State {
 
   private final @NotNull byte[] previousMovements;
 
-  private int pushTilesMask = Tiles.TEXT_MASKS;
+  int pushTilesMask = Tiles.TEXT_MASKS;
 
-  private int stopTilesMask = 0;
+  int stopTilesMask = Tiles.EMPTY;
 
-  private int youTilesMask = 0;
+  int youTilesMask = Tiles.EMPTY;
 
-  private int winTilesMask = 0;
+  int winTilesMask = Tiles.EMPTY;
 
   State(
       @NotNull Level level,
@@ -99,7 +99,7 @@ class State {
 
     // target is empty
     if (targetPositionContent == Tiles.EMPTY) {
-      newContent[targetPosition] |=  Tiles.BABA_MASK;
+      newContent[targetPosition] |= Tiles.BABA_MASK;
       newContent[currentPosition] ^= Tiles.BABA_MASK;
       level.addState(newContent, addMovement(direction));
       return null;
@@ -125,13 +125,13 @@ class State {
             newContent[behindCandidatePosition];
 
         // is it something that stop me
-        if ((behindCandidatePositionContent & stopTilesMask) != 0) {
+        if ((behindCandidatePositionContent & stopTilesMask) != Tiles.EMPTY) {
           return null;
         }
 
         // is it another thing that should be pushed?
         int behindCandidatePushingMask = behindCandidatePositionContent & pushTilesMask;
-        if ((behindCandidatePushingMask) != 0) {
+        if ((behindCandidatePushingMask) != Tiles.EMPTY) {
           // yes another thing to push
 
           // remove the pushed thing from next cell
@@ -156,13 +156,13 @@ class State {
       }
     }
 
-    if ((targetPositionContent & winTilesMask) != 0) {
+    if ((targetPositionContent & winTilesMask) != Tiles.EMPTY) {
       return addMovement(direction);
     }
 
     // move Baba
     newContent[targetPosition] |= Tiles.BABA_MASK;
-    newContent[currentPosition] ^=  Tiles.BABA_MASK;
+    newContent[currentPosition] ^= Tiles.BABA_MASK;
     level.addState(newContent, addMovement(direction));
     return null;
   }
@@ -225,7 +225,7 @@ class State {
   void processRules() {
     // locate the "IS"
     for (int i = 0; i < level.size; i++) {
-      if ((content[i] & Tiles.IS_TEXT_MASK) != 0) {
+      if ((content[i] & Tiles.IS_TEXT_MASK) != Tiles.EMPTY) {
         // any room to make an horizontal sentence ?
         int isLine = i / level.width;
         if ((isLine > 0) && (isLine < (level.height - 1))) {
@@ -251,12 +251,12 @@ class State {
     // validate it's a rule
     int subject = content[beforeCellIndex] &
         Tiles.SUBJECT_MASKS;
-    if (subject == 0) {
+    if (subject == Tiles.EMPTY) {
       return;
     }
     int definition = content[afterCellIndex] &
         Tiles.DEFINITION_MASKS;
-    if (definition == 0) {
+    if (definition == Tiles.EMPTY) {
       return;
     }
 
@@ -287,7 +287,7 @@ class State {
    */
   private int findBaba() {
     for (int i = 0; i < level.size; i++) {
-      if ((content[i] & Tiles.BABA_MASK) != 0) {
+      if ((content[i] & Tiles.BABA_MASK) != Tiles.EMPTY) {
         return i;
       }
     }

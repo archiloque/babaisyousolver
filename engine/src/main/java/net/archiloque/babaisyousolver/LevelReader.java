@@ -1,13 +1,11 @@
 package net.archiloque.babaisyousolver;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,12 +67,13 @@ final class LevelReader {
 
   /**
    * Find the index of a {@link Tiles} from its name
+   *
    * @param tileName the index or -1 if not found
    */
   private static int findIndexOfTile(
       @NotNull String tileName) {
     for (int index = 0; index < Tiles.ALL_STRINGS.length; index++) {
-      if(tileName.equals(Tiles.ALL_STRINGS[index])) {
+      if (tileName.equals(Tiles.ALL_STRINGS[index])) {
         return index;
       }
     }
