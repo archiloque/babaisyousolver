@@ -15,13 +15,13 @@ class State {
 
   private final @NotNull byte[] previousMovements;
 
-  int pushTiles = Tiles.TEXT_MASKS;
+  private int pushTilesMask = Tiles.TEXT_MASKS;
 
-  int stopTiles = 0;
+  private int stopTilesMask = 0;
 
-  int youTiles = 0;
+  private int youTilesMask = 0;
 
-  int winTiles = 0;
+  private int winTilesMask = 0;
 
   State(
       @NotNull Level level,
@@ -91,28 +91,29 @@ class State {
     int targetPosition = calculatePosition(currentPosition, direction);
     int targetPositionContent = content[targetPosition];
 
-    // target contains a wall
-    if ((targetPositionContent & Tiles.WALL_MASK) != 0) {
+    // target contains something that stops me
+    if ((targetPositionContent & stopTilesMask) != Tiles.EMPTY) {
       return null;
     }
     int[] newContent = content.clone();
 
     // target is empty
-    if (targetPositionContent == 0) {
-      newContent[targetPosition] =
-          newContent[targetPosition] | Tiles.BABA_MASK;
-      newContent[currentPosition] =
-          newContent[currentPosition] ^ Tiles.BABA_MASK;
+    if (targetPositionContent == Tiles.EMPTY) {
+      newContent[targetPosition] |=  Tiles.BABA_MASK;
+      newContent[currentPosition] ^= Tiles.BABA_MASK;
       level.addState(newContent, addMovement(direction));
       return null;
     }
 
-    if ((targetPositionContent & Tiles.ROCK_MASK) != 0) {
-      boolean foundCellAfterRocks = false;
+    int currentPushingMask = targetPositionContent & pushTilesMask;
+    if (currentPushingMask != Tiles.EMPTY) {
+      // remove the pushed elements
+      targetPositionContent &= (~pushTilesMask);
+
       int candidatePosition = targetPosition;
       // explore the next cells until we find the right stop
-      // or until we find a wall or the end of the level
-      while (!foundCellAfterRocks) {
+      // or until we are blocked or the end of the level
+      while (currentPushingMask != Tiles.EMPTY) {
         // did we reach the border of the level?
         if (!canGoThere(candidatePosition, direction)) {
           return null;
@@ -121,41 +122,47 @@ class State {
         int behindCandidatePosition =
             calculatePosition(candidatePosition, direction);
         int behindCandidatePositionContent =
-            content[behindCandidatePosition];
+            newContent[behindCandidatePosition];
 
-        // is it a wall?
-        if ((behindCandidatePositionContent & Tiles.WALL_MASK) != 0) {
+        // is it something that stop me
+        if ((behindCandidatePositionContent & stopTilesMask) != 0) {
           return null;
         }
 
-        // is it another rock?
-        if ((behindCandidatePositionContent & Tiles.ROCK_MASK) != 0) {
-          // yes another rock, next step of the loop
+        // is it another thing that should be pushed?
+        int behindCandidatePushingMask = behindCandidatePositionContent & pushTilesMask;
+        if ((behindCandidatePushingMask) != 0) {
+          // yes another thing to push
+
+          // remove the pushed thing from next cell
+          // and add the thing that was being pushed
+          behindCandidatePositionContent =
+              behindCandidatePositionContent &
+                  (~behindCandidatePushingMask) |
+                  currentPushingMask;
+          newContent[behindCandidatePosition] = behindCandidatePositionContent;
+          currentPushingMask = behindCandidatePushingMask;
           candidatePosition = behindCandidatePosition;
         } else {
-          // no rock, we found a solution !
-          foundCellAfterRocks = true;
+          // we found a cell that suits us!
+          // add the thing that was being pushed
+
           // we build the new content
-          // remove the rock near Baba
-          targetPositionContent =
-              newContent[targetPosition] ^ Tiles.ROCK_MASK;
           newContent[targetPosition] = targetPositionContent;
           // add a rock at the end
-          newContent[behindCandidatePosition] =
-              behindCandidatePositionContent | Tiles.ROCK_MASK;
+          newContent[behindCandidatePosition] |= currentPushingMask;
+          currentPushingMask = Tiles.EMPTY;
         }
       }
     }
 
-    if ((targetPositionContent & Tiles.FLAG_MASK) != 0) {
+    if ((targetPositionContent & winTilesMask) != 0) {
       return addMovement(direction);
     }
 
     // move Baba
-    newContent[targetPosition] =
-        newContent[targetPosition] | Tiles.BABA_MASK;
-    newContent[currentPosition] =
-        newContent[currentPosition] ^ Tiles.BABA_MASK;
+    newContent[targetPosition] |= Tiles.BABA_MASK;
+    newContent[currentPosition] ^=  Tiles.BABA_MASK;
     level.addState(newContent, addMovement(direction));
     return null;
   }
@@ -207,7 +214,7 @@ class State {
       case Direction.DOWN:
         return targetPositionLine != (level.height - 1);
       case Direction.LEFT:
-        return targetPositionColumn == 0;
+        return targetPositionColumn != 0;
       case Direction.RIGHT:
         return targetPositionColumn != (level.width - 1);
       default:
@@ -254,19 +261,19 @@ class State {
     }
 
     // apply the result
-    int targetMask = Tiles.TARGET_MASKS[subject];
+    int targetMask = Tiles.getTarget(subject);
     switch (definition) {
       case Tiles.PUSH_TEXT_MASK:
-        pushTiles = pushTiles | targetMask;
+        pushTilesMask |= targetMask;
         return;
       case Tiles.STOP_TEXT_MASK:
-        stopTiles = stopTiles | targetMask;
+        stopTilesMask |= targetMask;
         return;
       case Tiles.WIN_TEXT_MASK:
-        winTiles = winTiles | targetMask;
+        winTilesMask |= targetMask;
         return;
       case Tiles.YOU_TEXT_MASK:
-        youTiles = youTiles | targetMask;
+        youTilesMask |= targetMask;
         return;
       default:
         throw new IllegalArgumentException(Integer.toString(definition));

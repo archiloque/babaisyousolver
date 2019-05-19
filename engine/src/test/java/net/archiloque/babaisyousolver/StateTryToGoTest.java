@@ -44,6 +44,9 @@ class StateTryToGoTest {
         1,
         new int[content.length]);
     State state = new State(level, content, new byte[0]);
+    state.stopTilesMask = Tiles.WALL_MASK;
+    state.winTilesMask = Tiles.FLAG_MASK;
+    state.pushTilesMask = Tiles.ROCK_MASK | Tiles.TEXT_MASKS;
     assertArrayEquals(
         result,
         state.tryToGo(0, Direction.RIGHT));
@@ -172,6 +175,48 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.ROCK_MASK}});
+
+    // rock | flag text | empty
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_TEXT_MASK,
+            Tiles.EMPTY},
+        null,
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_TEXT_MASK}});
+
+    // rock | flag text + flag| empty
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_TEXT_MASK | Tiles.FLAG_MASK,
+            Tiles.EMPTY},
+        null,
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK | Tiles.FLAG_MASK,
+            Tiles.FLAG_TEXT_MASK}});
+
+    // rock | flag text | flag
+    checkMoveSimple(
+        new int[]{
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_TEXT_MASK,
+            Tiles.FLAG_MASK},
+        null,
+        new int[][]{new int[]{
+            Tiles.EMPTY,
+            Tiles.BABA_MASK,
+            Tiles.ROCK_MASK,
+            Tiles.FLAG_TEXT_MASK | Tiles.FLAG_MASK}});
 
     // rock | rock | wall | empty
     checkMoveSimple(

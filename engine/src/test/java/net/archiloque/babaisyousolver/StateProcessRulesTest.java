@@ -27,10 +27,10 @@ class StateProcessRulesTest {
         new byte[0]
     );
     state.processRules();
-    assertEquals(state.youTiles, youTiles);
-    assertEquals(state.pushTiles, pushTiles);
-    assertEquals(state.stopTiles, stopTiles);
-    assertEquals(state.winTiles, winTiles);
+    assertEquals(state.youTilesMask, youTiles);
+    assertEquals(state.pushTilesMask, pushTiles);
+    assertEquals(state.stopTilesMask, stopTiles);
+    assertEquals(state.winTilesMask, winTiles);
   }
 
   void testRules(
@@ -133,7 +133,7 @@ class StateProcessRulesTest {
         Tiles.BABA_MASK
     );
   }
-  
+
   @Test
   void simplePushRule() {
     testRules(

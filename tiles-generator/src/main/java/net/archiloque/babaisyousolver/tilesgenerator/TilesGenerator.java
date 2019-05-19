@@ -5,6 +5,7 @@ import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Entry point to generate the tiles class
@@ -97,9 +100,7 @@ public class TilesGenerator {
     for (String field : fields) {
       // create the constant from the field name
       String fieldConstantName =
-          field.
-              toUpperCase().
-              replace(' ', '_');
+          constantize(field);
       fieldsNames.add(fieldConstantName);
       addField(
           String.class,
@@ -153,8 +154,7 @@ public class TilesGenerator {
         "DEFINITION_MASKS"
     );
 
-    String[] subjectTargetMasks = new String[jsonObject.length()];
-    Arrays.fill(subjectTargetMasks, Integer.toString(-1));
+    Map<String, String> subjectTargetMasks = new HashMap<>();
     for (int i = 0; i < fieldsNames.size(); i++) {
       String fieldName = fields.get(i);
       JSONObject fieldDeclaration = jsonObject.
@@ -162,23 +162,39 @@ public class TilesGenerator {
 
       if (isA(fieldDeclaration, "subject")) {
         String targetName = fieldDeclaration.getString("subjectTarget");
-        int targetIndex = fields.indexOf(targetName);
-        subjectTargetMasks[i] = Integer.toString(1 << (targetIndex - 1));
+        subjectTargetMasks.put(fieldName, targetName);
       }
     }
-    String content = "\nnew int[]{" +
-        String.join(", ", subjectTargetMasks) +
-        "}";
-    addField(
-        ArrayTypeName.of(TypeName.INT),
-        "TARGET_MASKS",
-        content);
+
+    MethodSpec.Builder getTargetMethodBuilder = MethodSpec.methodBuilder("getTarget")
+        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        .returns(TypeName.INT)
+        .addParameter(TypeName.INT, "sourceMask")
+        .addCode("switch (sourceMask) {\n");
+    for (Map.Entry<String, String> integerIntegerEntry : subjectTargetMasks.entrySet()) {
+      getTargetMethodBuilder.addCode("case Tiles." + constantize(integerIntegerEntry.getKey()) + "_MASK:\n");
+      getTargetMethodBuilder.addCode("\treturn " + constantize(integerIntegerEntry.getValue()) + "_MASK;\n");
+    }
+
+    getTargetMethodBuilder.addCode("default:\n");
+    getTargetMethodBuilder.addCode("\tthrow new IllegalArgumentException(Integer.toString(sourceMask));\n");
+    getTargetMethodBuilder.addCode("}\n");
+    tileInterface.addMethod(getTargetMethodBuilder.build());
+
 
     // create the file
     return JavaFile.builder(
         "net.archiloque.babaisyousolver",
         tileInterface.build()).
         build();
+  }
+
+  @NotNull
+  private String constantize(
+      @NotNull String field) {
+    return field.
+        toUpperCase().
+        replace(' ', '_');
   }
 
   /**
