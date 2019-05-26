@@ -3,6 +3,8 @@ package net.archiloque.babaisyousolver;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StateProcessRulesTest {
@@ -15,7 +17,7 @@ class StateProcessRulesTest {
       int pushTiles,
       int stopTiles,
       int winTiles
-  ) {
+  ) throws SQLException {
     Level level = new Level(
         levelWidth,
         levelHeight,
@@ -24,7 +26,7 @@ class StateProcessRulesTest {
     State state = new State(
         level,
         stateContent,
-        new byte[0]
+        0
     );
     state.processRules();
     assertEquals(state.youTilesMask, youTiles);
@@ -38,7 +40,7 @@ class StateProcessRulesTest {
       int levelHeight,
       @NotNull int[] stateContent,
       int youTiles
-  ) {
+  ) throws SQLException {
     testRules(
         levelWidth,
         levelHeight,
@@ -50,7 +52,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleHorizontalRule() {
+  void simpleHorizontalRule() throws SQLException {
     testRules(
         1,
         3,
@@ -63,7 +65,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleVerticalRule() {
+  void simpleVerticalRule() throws SQLException {
     testRules(
         3,
         1,
@@ -76,7 +78,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleBadOrder() {
+  void simpleBadOrder() throws SQLException {
     testRules(
         3,
         1,
@@ -98,7 +100,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleBorder() {
+  void simpleBorder() throws SQLException {
     testRules(
         2,
         1,
@@ -122,7 +124,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleYouRule() {
+  void simpleYouRule() throws SQLException {
     testRules(
         1,
         3,
@@ -135,7 +137,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simplePushRule() {
+  void simplePushRule() throws SQLException {
     testRules(
         1,
         3,
@@ -151,7 +153,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleStopRule() {
+  void simpleStopRule() throws SQLException {
     testRules(
         1,
         3,
@@ -167,7 +169,7 @@ class StateProcessRulesTest {
   }
 
   @Test
-  void simpleWinRule() {
+  void simpleWinRule() throws SQLException {
     testRules(
         1,
         3,

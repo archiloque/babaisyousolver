@@ -26,7 +26,8 @@ class StateTryToGoTest {
     @Override
     void addState(
         @NotNull int[] content,
-        @NotNull byte[] movement) {
+        byte movement,
+        int parent) {
       states.add(content);
     }
   }
@@ -37,17 +38,17 @@ class StateTryToGoTest {
    */
   void checkMoveSimple(
       @NotNull int[] content,
-      @Nullable byte[] result,
+      byte result,
       @NotNull int[][] possibleNextMoves) {
     LevelToTestTryToGo level = new LevelToTestTryToGo(
         content.length,
         1,
         new int[content.length]);
-    State state = new State(level, content, new byte[0]);
+    State state = new State(level, content, 0);
     state.stopTilesMask = Tiles.WALL_MASK;
     state.winTilesMask = Tiles.FLAG_MASK;
     state.pushTilesMask = Tiles.ROCK_MASK | Tiles.TEXT_MASKS;
-    assertArrayEquals(
+    assertEquals(
         result,
         state.tryToGo(0, Direction.RIGHT));
     assertEquals(possibleNextMoves.length, level.states.size());
@@ -65,7 +66,7 @@ class StateTryToGoTest {
         new int[]{
             Tiles.BABA_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK}});
@@ -78,7 +79,7 @@ class StateTryToGoTest {
         new int[]{
             Tiles.BABA_MASK,
             Tiles.WALL_MASK},
-        null,
+        (byte) -1,
         new int[0][]);
   }
 
@@ -89,7 +90,7 @@ class StateTryToGoTest {
         new int[]{
             Tiles.BABA_MASK,
             Tiles.FLAG_MASK},
-        new byte[]{Direction.RIGHT},
+        Direction.RIGHT,
         new int[0][]);
   }
 
@@ -100,7 +101,7 @@ class StateTryToGoTest {
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK},
-        null,
+        (byte) -1,
         new int[0][]);
 
     // rock + flag
@@ -108,7 +109,7 @@ class StateTryToGoTest {
         new int[]{
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK | Tiles.FLAG_MASK},
-        null,
+        (byte) -1,
         new int[0][]);
 
     // rock | rock
@@ -117,7 +118,7 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.ROCK_MASK},
-        null,
+        (byte) -1,
         new int[0][]);
 
     // rock | wall
@@ -126,7 +127,7 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.WALL_MASK},
-        null,
+        (byte) -1,
         new int[0][]);
 
     // rock | empty
@@ -135,7 +136,7 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -147,7 +148,7 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK | Tiles.FLAG_MASK,
             Tiles.EMPTY},
-        new byte[]{Direction.RIGHT},
+        Direction.RIGHT,
         new int[0][]);
 
     // rock | flag
@@ -156,7 +157,7 @@ class StateTryToGoTest {
             Tiles.BABA_MASK,
             Tiles.ROCK_MASK,
             Tiles.FLAG_MASK},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -169,7 +170,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK,
             Tiles.ROCK_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -183,7 +184,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK,
             Tiles.FLAG_TEXT_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -197,7 +198,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK,
             Tiles.FLAG_TEXT_MASK | Tiles.FLAG_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -211,7 +212,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK,
             Tiles.FLAG_TEXT_MASK,
             Tiles.FLAG_MASK},
-        null,
+        (byte) -1,
         new int[][]{new int[]{
             Tiles.EMPTY,
             Tiles.BABA_MASK,
@@ -226,7 +227,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK,
             Tiles.WALL_MASK,
             Tiles.EMPTY},
-        null,
+        (byte) -1,
         new int[0][]);
 
     // rock + flag | rock | empty
@@ -236,7 +237,7 @@ class StateTryToGoTest {
             Tiles.ROCK_MASK | Tiles.FLAG_MASK,
             Tiles.ROCK_MASK,
             Tiles.EMPTY},
-        new byte[]{Direction.RIGHT},
+        Direction.RIGHT,
         new int[0][]);
   }
 

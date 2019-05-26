@@ -1,7 +1,6 @@
 package net.archiloque.babaisyousolver;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 class State {
 
@@ -13,7 +12,7 @@ class State {
    */
   private final @NotNull int[] content;
 
-  private final @NotNull byte[] previousMovements;
+  final int id;
 
   int pushTilesMask = Tiles.TEXT_MASKS;
 
@@ -26,10 +25,10 @@ class State {
   State(
       @NotNull Level level,
       @NotNull int[] content,
-      @NotNull byte[] movements) {
+      int id) {
     this.level = level;
     this.content = content;
-    this.previousMovements = movements;
+    this.id = id;
   }
 
   /**
@@ -38,45 +37,52 @@ class State {
    * @return a list of {@link Direction} if we found a solution,
    * else null
    */
-  @Nullable byte[] processState() {
+  byte processState() {
     processRules();
+    if(youTilesMask != Tiles.BABA_MASK) {
+      return Direction.NO_DIRECTION;
+    }
     int babaPosition = findBaba();
     int babaLine = babaPosition / level.width;
     int babaColumn = babaPosition % level.width;
 
-    byte[] result;
     // Up
-    if (babaLine > 0) {
-      result = tryToGo(babaPosition, Direction.UP);
-      if (result != null) {
+    boolean canGoUp = babaLine > 0;
+    if (canGoUp) {
+      byte result = tryToGo(babaPosition, Direction.UP);
+      if (result != Direction.NO_DIRECTION) {
         return result;
       }
     }
 
     // Down
-    if (babaLine < (level.height - 1)) {
-      result = tryToGo(babaPosition, Direction.DOWN);
-      if (result != null) {
+    boolean canGoDown = babaLine < (level.height - 1);
+    if (canGoDown) {
+      byte result = tryToGo(babaPosition, Direction.DOWN);
+      if (result != Direction.NO_DIRECTION) {
         return result;
       }
     }
 
     // Left
-    if (babaColumn > 0) {
-      result = tryToGo(babaPosition, Direction.LEFT);
-      if (result != null) {
+    boolean canGoLeft = babaColumn > 0;
+    if (canGoLeft) {
+      byte result = tryToGo(babaPosition, Direction.LEFT);
+      if (result != Direction.NO_DIRECTION) {
         return result;
       }
     }
 
     // Right
-    if (babaColumn < (level.width - 1)) {
-      result = tryToGo(babaPosition, Direction.RIGHT);
-      if (result != null) {
+    boolean canGoRight = babaColumn < (level.width - 1);
+    if (canGoRight) {
+      byte result = tryToGo(babaPosition, Direction.RIGHT);
+      if (result != Direction.NO_DIRECTION) {
         return result;
       }
     }
-    return null;
+
+    return Direction.NO_DIRECTION;
   }
 
   /**
@@ -85,7 +91,7 @@ class State {
    * @return a list of {@link Direction} if we found a solution,
    * else null
    */
-  @Nullable byte[] tryToGo(
+  byte tryToGo(
       int currentPosition,
       byte direction) {
     int targetPosition = calculatePosition(currentPosition, direction);
@@ -93,7 +99,7 @@ class State {
 
     // target contains something that stops me
     if ((targetPositionContent & stopTilesMask) != Tiles.EMPTY) {
-      return null;
+      return Direction.NO_DIRECTION;
     }
     int[] newContent = content.clone();
 
@@ -101,8 +107,8 @@ class State {
     if (targetPositionContent == Tiles.EMPTY) {
       newContent[targetPosition] |= Tiles.BABA_MASK;
       newContent[currentPosition] ^= Tiles.BABA_MASK;
-      level.addState(newContent, addMovement(direction));
-      return null;
+      level.addState(newContent, direction, id);
+      return Direction.NO_DIRECTION;
     }
 
     int currentPushingMask = targetPositionContent & pushTilesMask;
@@ -116,7 +122,7 @@ class State {
       while (currentPushingMask != Tiles.EMPTY) {
         // did we reach the border of the level?
         if (!canGoThere(candidatePosition, direction)) {
-          return null;
+          return Direction.NO_DIRECTION;
         }
         // the position behind the current position
         int behindCandidatePosition =
@@ -126,7 +132,7 @@ class State {
 
         // is it something that stop me
         if ((behindCandidatePositionContent & stopTilesMask) != Tiles.EMPTY) {
-          return null;
+          return Direction.NO_DIRECTION;
         }
 
         // is it another thing that should be pushed?
@@ -157,25 +163,14 @@ class State {
     }
 
     if ((targetPositionContent & winTilesMask) != Tiles.EMPTY) {
-      return addMovement(direction);
+      return direction;
     }
 
     // move Baba
     newContent[targetPosition] |= Tiles.BABA_MASK;
     newContent[currentPosition] ^= Tiles.BABA_MASK;
-    level.addState(newContent, addMovement(direction));
-    return null;
-  }
-
-  /**
-   * Add a new movement at the end of the array
-   */
-  private @NotNull byte[] addMovement(byte movement) {
-    int previousLength = previousMovements.length;
-    byte[] result = new byte[previousLength + 1];
-    System.arraycopy(previousMovements, 0, result, 0, previousLength);
-    result[previousLength] = movement;
-    return result;
+    level.addState(newContent, direction, id);
+    return Direction.NO_DIRECTION;
   }
 
   /**

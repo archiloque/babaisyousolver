@@ -21,20 +21,19 @@ public class App {
 
   public static void main(
       @NotNull String[] args)
-      throws IOException {
+      throws Exception {
     if (args.length == 0) {
       throw new IllegalArgumentException(
           "A level path should be specified");
     }
     processLevel(Path.of(args[0]));
-
   }
 
   private static final String SOLUTION_FILES = "solution.txt";
 
   private static void processLevel(
       @NotNull Path path
-  ) throws IOException {
+  ) throws Exception {
     print(path, "Reading level");
     LevelReader.LevelReaderResult levelReaderResult =
         LevelReader.readLevel(path);

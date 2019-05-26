@@ -29,14 +29,14 @@ class StateAvailableMovementsTest {
     StateToTestAvailableMovements(
         @NotNull Level level,
         @NotNull int[] content) {
-      super(level, content, new byte[0]);
+      super(level, content, 0);
       youTilesMask = Tiles.BABA_MASK;
     }
 
     @Override
-    byte[] tryToGo(int currentPosition, byte position) {
+    byte tryToGo(int currentPosition, byte position) {
       movements.add(position);
-      return null;
+      return -1;
     }
   }
 
