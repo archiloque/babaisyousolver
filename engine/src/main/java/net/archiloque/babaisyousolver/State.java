@@ -183,22 +183,17 @@ class State {
    */
   private int calculatePosition(int position, byte direction) {
     // Content is stored as a single array one line after another
-    switch (direction) {
-      case Direction.UP:
-        // up: go back one row
-        return position - level.width;
-      case Direction.DOWN:
-        // down: go further one row
-        return position + level.width;
-      case Direction.LEFT:
-        // left : go back one item
-        return position - 1;
-      case Direction.RIGHT:
-        // left : go further one item
-        return position + 1;
-      default:
-        throw new IllegalArgumentException(Integer.toString(direction));
-    }
+    return switch (direction) {
+      // up: go back one row
+      case Direction.UP -> position - level.width;
+      // down: go further one row
+      case Direction.DOWN -> position + level.width;
+      // left : go back one item
+      case Direction.LEFT -> position - 1;
+      // right : go further one item
+      case Direction.RIGHT -> position + 1;
+      default -> throw new IllegalArgumentException(Integer.toString(direction));
+    };
   }
 
   /**
@@ -208,18 +203,13 @@ class State {
     int targetPositionLine = targetPosition / level.width;
     int targetPositionColumn = targetPosition % level.width;
 
-    switch (direction) {
-      case Direction.UP:
-        return targetPositionLine != 0;
-      case Direction.DOWN:
-        return targetPositionLine != (level.height - 1);
-      case Direction.LEFT:
-        return targetPositionColumn != 0;
-      case Direction.RIGHT:
-        return targetPositionColumn != (level.width - 1);
-      default:
-        throw new IllegalArgumentException(Integer.toString(direction));
-    }
+    return switch (direction) {
+      case Direction.UP -> targetPositionLine != 0;
+      case Direction.DOWN -> targetPositionLine != (level.height - 1);
+      case Direction.LEFT -> targetPositionColumn != 0;
+      case Direction.RIGHT -> targetPositionColumn != (level.width - 1);
+      default -> throw new IllegalArgumentException(Integer.toString(direction));
+    };
   }
 
   void processRules() {
@@ -263,20 +253,11 @@ class State {
     // apply the result
     int targetMask = Tiles.getTarget(subject);
     switch (definition) {
-      case Tiles.PUSH_TEXT_MASK:
-        pushTilesMask |= targetMask;
-        return;
-      case Tiles.STOP_TEXT_MASK:
-        stopTilesMask |= targetMask;
-        return;
-      case Tiles.WIN_TEXT_MASK:
-        winTilesMask |= targetMask;
-        return;
-      case Tiles.YOU_TEXT_MASK:
-        youTilesMask |= targetMask;
-        return;
-      default:
-        throw new IllegalArgumentException(Integer.toString(definition));
+      case Tiles.PUSH_TEXT_MASK -> pushTilesMask |= targetMask;
+      case Tiles.STOP_TEXT_MASK -> stopTilesMask |= targetMask;
+      case Tiles.WIN_TEXT_MASK -> winTilesMask |= targetMask;
+      case Tiles.YOU_TEXT_MASK -> youTilesMask |= targetMask;
+      default -> throw new IllegalArgumentException(Integer.toString(definition));
     }
   }
 

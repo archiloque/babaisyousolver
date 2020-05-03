@@ -169,15 +169,15 @@ public class TilesGenerator {
         .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
         .returns(TypeName.INT)
         .addParameter(TypeName.INT, "sourceMask")
-        .addCode("switch (sourceMask) {\n");
+        .addCode("return switch (sourceMask) {\n");
     for (Map.Entry<String, String> integerIntegerEntry : subjectTargetMasks.entrySet()) {
-      getTargetMethodBuilder.addCode("case Tiles." + constantize(integerIntegerEntry.getKey()) + "_MASK:\n");
-      getTargetMethodBuilder.addCode("\treturn " + constantize(integerIntegerEntry.getValue()) + "_MASK;\n");
+      String key = constantize(integerIntegerEntry.getKey());
+      String value = constantize(integerIntegerEntry.getValue());
+      getTargetMethodBuilder.addCode("case Tiles." + key + "_MASK -> " + value + "_MASK;\n");
     }
 
-    getTargetMethodBuilder.addCode("default:\n");
-    getTargetMethodBuilder.addCode("\tthrow new IllegalArgumentException(Integer.toString(sourceMask));\n");
-    getTargetMethodBuilder.addCode("}\n");
+    getTargetMethodBuilder.addCode("default -> throw new IllegalArgumentException(Integer.toString(sourceMask));\n");
+    getTargetMethodBuilder.addCode("};\n");
     tileInterface.addMethod(getTargetMethodBuilder.build());
 
 
