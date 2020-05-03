@@ -149,7 +149,7 @@ class State {
 
           // we build the new content
           newContent[targetPosition] = targetPositionContent;
-          // add a rock at the end
+          // add the thing that was being pushed
           newContent[behindCandidatePosition] |= currentPushingMask;
           currentPushingMask = Tiles.EMPTY;
         }
